@@ -1,0 +1,1832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="INITIATE: take a scattered idea through a real product lifecycle. Pitch, Scrum, DevOps, QA, launch day. A free browser game.">
+<meta property="og:title" content="INITIATE: a product lifecycle game">
+<meta property="og:description" content="Take a scattered idea from napkin to launch day. Pitch, Scrum, DevOps, QA and real users.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yushabdullah.github.io/initiate/">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#6BE683">
+<title>INITIATE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap">
+<style>
+/* Layout: a craft desk. Green cutting mat background, every screen is a sheet of paper laid on it; game pieces are coloured paper cutouts with tape. One centred reading column (max 780px). Single bright look by choice. */
+:root{
+  /* Fealty base: mint canvas, white cards, one mint CTA, green-tinted depth. Paper cutout pieces sit on top. */
+  --canvas:#F6FEF6; --tint:#E3F8E6; --mint:#6BE683; --mint-hover:#55D86C; --on-mint:#003503; --accent:#1CBB6C; --border:#DDEBDF;
+  --paper:#ffffff; --paper-2:#F1F7F1; --paper-3:#DDEBDF;
+  --ink:#0F1A12; --ink-soft:#4E544F; --night:#262828;
+  --tomato:#e5533d; --mustard:#f2b632; --sky:#4aa3df; --cobalt:#3557c6; --leaf:#2f9a55; --pink:#ef8db0; --lilac:#9478d1; --teal:#1f9e93; --kraft:#c9a46c;
+  --good:#1A7F55; --bad:#C42A36; --warn:#9A6A00;
+  --display:'Outfit',ui-sans-serif,system-ui,sans-serif;
+  --body:'Outfit',ui-sans-serif,system-ui,sans-serif;
+  --hand:'Caveat','Comic Sans MS',cursive;
+  --cut:14px 7px 12px 9px / 9px 13px 7px 12px;
+  --e1:0 4px 16px rgba(16,40,20,.06); --e2:0 12px 32px rgba(16,40,20,.08); --e3:0 24px 60px rgba(16,40,20,.14);
+  --lift:0 2px 0 rgba(16,40,20,.06),0 10px 20px -8px rgba(16,40,20,.3);
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:radial-gradient(620px 420px at 92% -6%,var(--tint),transparent 70%),radial-gradient(520px 420px at -12% 38%,var(--tint),transparent 70%),var(--canvas);
+  background-attachment:fixed;
+  color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;
+}
+#app{max-width:820px;margin:0 auto;padding-block:16px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(24px,4.4vw,32px);line-height:1.12}
+h3{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.2}
+p{margin:0}
+.label{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-soft)}
+
+/* ---------- paper ---------- */
+.sheet{position:relative;background:var(--paper);border-radius:6px;box-shadow:var(--lift);padding:22px;display:grid;gap:14px;min-width:0}
+.sheet.tilt-l{transform:rotate(-.5deg)} .sheet.tilt-r{transform:rotate(.4deg)}
+.tape::before{content:"";position:absolute;top:-12px;left:50%;width:110px;height:26px;transform:translateX(-50%) rotate(-3deg);background:rgba(242,182,50,.55);box-shadow:0 1px 2px rgba(0,0,0,.08);pointer-events:none}
+.tape.t2::before{left:18%;background:rgba(239,141,176,.55);transform:rotate(4deg)}
+.scrap{--c:var(--sky);--t:#fff;position:relative;display:block;background:var(--c);color:var(--t);border:0;border-radius:var(--cut);padding:12px 14px;text-align:left;font-weight:700;box-shadow:var(--lift);transform:rotate(var(--r,0deg));transition:transform .15s ease,box-shadow .15s ease}
+.scrap.light{--t:var(--ink)}
+button.scrap:not(:disabled):hover{transform:rotate(var(--r,0deg)) translateY(-2px)}
+
+.btn{--c:var(--mustard);--t:var(--ink);font-family:var(--display);font-weight:700;font-size:19px;padding:14px 26px;min-height:54px;border-radius:12px 8px 13px 9px / 9px 13px 8px 12px;border:0;background:var(--c);color:var(--t);box-shadow:0 4px 0 rgba(0,0,0,.22),0 10px 16px -10px rgba(0,0,0,.5);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
+.btn:not(:disabled):hover{transform:translateY(-1px)}
+.btn:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
+.btn.sec{--c:var(--paper-2);--t:var(--ink)}
+.btn.blue{--c:var(--cobalt);--t:#fff}
+.btn.red{--c:var(--tomato);--t:#fff}
+.btn.small{font-size:16px;padding:10px 16px;min-height:44px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.say{min-height:1.6em;font-weight:700;font-size:15px;padding:8px 12px;border-radius:8px;background:var(--paper-2);color:var(--ink-soft)}
+.say.good{background:#e3f4e8;color:#1f6e3b}.say.bad{background:#fde6e1;color:#a52d1b}
+.how{display:flex;gap:10px;align-items:flex-start;font-size:15px;background:#fff7dc;border-radius:8px;padding:10px 12px}
+.how b{font-family:var(--display);font-weight:600;white-space:nowrap}
+.real{font-size:14px;color:var(--ink-soft)}
+.real b{color:var(--ink)}
+
+/* ---------- avatar (paper sticker) ---------- */
+.av{display:block;flex:none}
+.av svg{display:block;width:100%;height:auto;filter:drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 6px 6px rgba(0,0,0,.3))}
+.av.bob{animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px) rotate(1deg)}}
+
+/* ---------- HUD ---------- */
+.hud{display:grid;gap:10px;background:var(--paper);border-radius:6px;box-shadow:var(--lift);padding:12px 14px}
+.hud-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hud .who{display:flex;align-items:center;gap:10px;flex:1;min-width:200px}
+.hud .who .av{width:44px}
+.hud .nm{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.1}
+.hud .sub{font-size:13px;color:var(--ink-soft);font-weight:700}
+.xp{flex:1;min-width:150px;display:grid;gap:3px}
+.xp .bar{height:12px;border-radius:6px;background:var(--paper-3);overflow:hidden}
+.xp .bar i{display:block;height:100%;background:var(--leaf);border-radius:6px;transition:width .6s}
+.xp small{font-size:12px;font-weight:800;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative;background:var(--paper-2);border-radius:8px;padding:4px 10px;font-size:13px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip span{color:var(--ink-soft);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+.delta{position:absolute;right:-4px;top:-14px;font-size:12px;font-weight:800;border-radius:6px;padding:0 5px;color:#fff;animation:deltaUp 1.6s ease forwards;pointer-events:none}
+.delta.up{background:var(--good)}.delta.down{background:var(--bad)}
+@keyframes deltaUp{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+
+/* ---------- title ---------- */
+.title{display:grid;gap:22px;justify-items:center;text-align:center;padding-block:20px 0}
+.letters{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.letter{font-family:var(--display);font-weight:700;font-size:clamp(40px,10vw,88px);line-height:1;width:1em;padding:.12em 0 .16em;text-align:center;background:var(--c);color:#fff;border-radius:var(--cut);box-shadow:var(--lift);transform:rotate(var(--r));animation:cutIn .6s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i) * 80ms)}
+.letter.dark{color:var(--ink)}
+@keyframes cutIn{0%{opacity:0;transform:translateY(-40px) rotate(-20deg)}100%{opacity:1;transform:rotate(var(--r))}}
+.tagline{color:#fff;font-size:clamp(17px,2.4vw,20px);max-width:32em}
+.tagline b{font-family:var(--display);font-weight:600}
+.phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:100%}
+.phase{padding:12px 10px;text-align:center;font-weight:700;font-size:14px}
+.phase b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
+
+/* ---------- character ---------- */
+.pick2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ptile{background:var(--paper-2);border:3px solid transparent;border-radius:12px;padding:14px;display:grid;justify-items:center;gap:6px;text-align:center}
+.ptile .av{width:110px}
+.ptile[aria-pressed="true"]{border-color:var(--cobalt);background:#e8eefc}
+.ptile b{font-family:var(--display);font-size:20px}
+.ptile small{font-size:14px;color:var(--ink-soft)}
+.custom{display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;align-items:start}
+.custom .preview{background:var(--paper-2);border-radius:12px;padding:12px}
+.opt-row{display:grid;gap:6px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--paper-3);background:var(--c)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--cobalt)}
+.pill{border:0;background:var(--paper-2);border-radius:999px;padding:8px 14px;font-weight:700;font-size:15px;min-height:40px}
+.pill[aria-pressed="true"]{background:var(--ink);color:#fff}
+.field{display:grid;gap:4px}
+.field input{border:2px solid var(--paper-3);border-radius:10px;padding:10px 12px;background:#fff;font-weight:700;min-height:48px;width:100%}
+.field input:focus{border-color:var(--cobalt);outline:none}
+
+/* ---------- idea pick ---------- */
+.ideas{display:grid;gap:14px}
+.idea{padding:16px 18px;display:grid;gap:4px}
+.idea .k{font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;opacity:.9}
+.idea .n{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1}
+.idea .d{font-weight:600;font-size:15px}
+
+/* ---------- journey map ---------- */
+.map{display:grid;gap:0;position:relative;padding-block:6px}
+.ph-h{font-family:var(--hand);font-size:30px;font-weight:700;color:var(--ink-soft);margin:10px 0 2px;line-height:1}
+.node{display:flex;align-items:center;gap:14px;padding:8px 0;position:relative}
+.node:nth-child(even){padding-left:28px}
+.dot{width:56px;height:56px;flex:none;border-radius:50% 46% 52% 48%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:20px;background:var(--paper-3);color:var(--ink-soft);box-shadow:0 3px 0 rgba(0,0,0,.1)}
+.node.done .dot{background:var(--leaf);color:#fff}
+.node.next .dot{background:var(--mustard);color:var(--ink);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.node .meta{flex:1;min-width:0}
+.node .meta b{font-family:var(--display);font-weight:600;font-size:18px;display:block;line-height:1.2}
+.node .meta small{font-size:14px;color:var(--ink-soft)}
+.node.locked{opacity:.55}
+.stars{color:var(--warn);letter-spacing:1px;font-size:15px;white-space:nowrap}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{--c:var(--lilac);background:var(--c);color:#fff;border-radius:999px 999px 999px 4px;padding:5px 12px;font-size:13px;font-weight:800;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.badge.off{background:var(--paper-2);color:var(--ink-soft);box-shadow:none}
+
+/* ---------- intro ---------- */
+.intro{display:flex;gap:16px;align-items:flex-end}
+.intro .av{width:96px}
+.intro .sheet{flex:1}
+.intro .sheet::after{content:"";position:absolute;left:-11px;bottom:28px;border:11px solid transparent;border-right-color:var(--paper);border-left:0}
+.role{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--cobalt)}
+
+/* ---------- drag and drop ---------- */
+.drag{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.drag.lifted{opacity:.3}
+.drag.picked{outline:4px solid var(--ink);outline-offset:3px}
+.ghost{cursor:grabbing;box-shadow:0 18px 30px -10px rgba(0,0,0,.55)!important;transition:none!important}
+[data-drop]{transition:background .15s, box-shadow .15s}
+body.picking [data-drop]:not(.full){box-shadow:0 0 0 3px var(--cobalt) inset;cursor:pointer}
+[data-drop].over{background:#dfe8fb!important;box-shadow:0 0 0 4px var(--cobalt) inset!important}
+.bounce{animation:bounce .45s}
+@keyframes bounce{20%{transform:translateX(-8px) rotate(-3deg)}50%{transform:translateX(8px) rotate(3deg)}80%{transform:translateX(-3px)}}
+.snap{animation:snap .35s}
+@keyframes snap{0%{transform:scale(.85)}70%{transform:scale(1.05)}100%{transform:none}}
+
+/* ---------- napkin ---------- */
+.tray{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:6px 0}
+.tray .scrap{max-width:330px;font-size:15px}
+.nap-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;align-items:start}
+.nap-wrap .tray{justify-content:flex-start}
+.napkin{background:#fff;border-radius:4px;padding:18px 18px 22px;box-shadow:var(--lift);transform:rotate(-.6deg);
+  background-image:linear-gradient(90deg,transparent calc(50% - 1px),rgba(0,0,0,.05) 50%,transparent calc(50% + 1px)),linear-gradient(transparent calc(50% - 1px),rgba(0,0,0,.05) 50%,transparent calc(50% + 1px));
+  border:2px dashed var(--paper-3);display:grid;gap:10px}
+.napkin .hand{font-family:var(--hand);font-size:30px;font-weight:700;line-height:1.1;color:var(--cobalt)}
+.napkin input{font-family:var(--hand);font-size:24px;font-weight:600;border:0;border-bottom:2px solid var(--paper-3);background:transparent;padding:4px 2px;width:100%;color:var(--ink)}
+.napkin input:focus{outline:none;border-bottom-color:var(--cobalt)}
+.nline{border-radius:8px;padding:8px 10px;min-height:64px;display:grid;gap:2px;background:rgba(241,239,233,.6);text-align:left;border:0;width:100%}
+.nline .k{font-family:var(--hand);font-size:24px;font-weight:700;color:var(--tomato);line-height:1}
+.nline .v{font-size:15px;color:var(--ink-soft);font-weight:600}
+.nline.full .v{color:var(--ink);font-weight:700}
+
+/* ---------- BMC ---------- */
+.deck{display:grid;justify-items:center;gap:8px;padding:8px 0 4px}
+.deck .scrap{max-width:420px;width:100%;font-size:17px;padding:16px 18px;text-align:center}
+.deck .left{font-size:13px;font-weight:800;color:var(--ink-soft)}
+.bmc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-areas:"kp kp ka ka vp vp cr cr cs cs" "kp kp kr kr vp vp ch ch cs cs" "co co co co co rs rs rs rs rs";gap:6px;background:var(--ink);padding:6px;border-radius:8px}
+.blk{background:var(--paper);border:0;border-radius:4px;padding:8px;min-height:120px;text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0}
+.blk b{font-family:var(--display);font-weight:600;font-size:14px;line-height:1.15}
+.blk small{font-size:12px;color:var(--ink-soft);line-height:1.3}
+.blk .placed{margin-top:auto;font-size:12.5px;font-weight:700;background:var(--c,var(--mustard));border-radius:6px 3px 7px 4px;padding:6px 7px;color:var(--ink);line-height:1.3;transform:rotate(-1deg)}
+.blk.full{background:#fbf8ef}
+
+/* ---------- pitch ---------- */
+.boardroom{display:flex;justify-content:center;gap:12px;align-items:flex-end}
+.boardroom .seat{display:grid;justify-items:center;gap:4px;font-size:13px;font-weight:800}
+.boardroom .av{width:82px;transition:transform .2s}
+.boardroom .seat.talk .av{transform:translateY(-8px) scale(1.06)}
+.desk{height:18px;background:var(--kraft);border-radius:4px 7px 3px 6px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+.q{font-size:19px;font-weight:700;background:var(--paper-2);border-radius:10px;padding:12px 16px}
+.q small{display:block;font-size:13px;color:var(--cobalt);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.choices{display:grid;gap:10px}
+.choice{font-size:16px;padding:14px 16px;min-height:52px}
+.meter{position:relative;height:22px;background:var(--paper-2);border-radius:11px;overflow:hidden}
+.meter>i{display:block;height:100%;width:0;background:var(--leaf);transition:width .5s ease}
+.meter>em{position:absolute;top:0;bottom:0;width:3px;background:var(--ink)}
+.meter-l{display:flex;justify-content:space-between;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.stamp{font-family:var(--display);font-weight:700;font-size:clamp(28px,6vw,44px);color:var(--good);border:6px solid currentColor;border-radius:14px 8px 12px 9px;padding:4px 18px;transform:rotate(-7deg);justify-self:center;animation:stamp .45s cubic-bezier(.3,1.6,.5,1) both}
+.stamp.no{color:var(--bad)}
+@keyframes stamp{0%{transform:rotate(-7deg) scale(2.2);opacity:0}100%{transform:rotate(-7deg) scale(1);opacity:1}}
+
+/* ---------- PM ---------- */
+.member{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;font-size:15px}
+.member small{font-weight:600;opacity:.9;display:block;font-size:13px}
+.member.off{--c:var(--paper-2);--t:var(--ink-soft)}
+.toggle-note{font-size:13px;font-weight:800;white-space:nowrap}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:10px;border:0;background:var(--ink);color:#fff;font-weight:800;font-size:22px;line-height:1}
+.stepper b{min-width:1.6em;text-align:center;font-size:20px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--paper-3);font-size:15px;font-variant-numeric:tabular-nums}
+.row b.bad{color:var(--bad)}
+
+/* ---------- PO ---------- */
+.story-row{display:grid;gap:8px;padding:12px;border-radius:10px;background:var(--paper-2)}
+.story-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;font-weight:700}
+.tags{display:flex;gap:4px;flex:none}
+.tag{font-size:12px;font-weight:800;background:#fff;border-radius:6px;padding:2px 7px;white-space:nowrap;color:var(--ink-soft)}
+.seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.seg button{border:0;border-radius:8px;padding:8px 4px;min-height:42px;font-weight:800;font-size:14px;background:#fff}
+.seg button[aria-pressed="true"][data-t="M"]{background:var(--tomato);color:#fff}
+.seg button[aria-pressed="true"][data-t="S"]{background:var(--mustard)}
+.seg button[aria-pressed="true"][data-t="C"]{background:var(--sky);color:#fff}
+.seg button[aria-pressed="true"][data-t="W"]{background:var(--ink-soft);color:#fff}
+
+/* ---------- analyst ---------- */
+.req{width:100%;text-align:left;border:3px solid var(--paper-2);background:#fff;border-radius:10px;padding:12px 14px;display:grid;gap:6px;font-weight:700;min-height:52px}
+.req.marked{border-color:var(--warn);background:#fff6e6}
+.req .verdict{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.req .fix{font-size:14px;font-weight:600;background:#e3f4e8;border-radius:8px;padding:8px 10px}
+.good-t{color:var(--good)}.bad-t{color:var(--bad)}
+
+/* ---------- UX ---------- */
+.ux-wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+.phone{width:250px;border:10px solid var(--ink);border-radius:30px;background:var(--paper-2);padding:14px 10px 18px;display:grid;gap:8px}
+.phone .notch{width:64px;height:6px;border-radius:3px;background:var(--ink);justify-self:center}
+.pslot{min-height:56px;border:2px dashed #b9b4a8;border-radius:10px;background:#fff;font-size:13px;padding:8px 10px;text-align:left;color:var(--ink-soft);font-weight:700;width:100%}
+.pslot.full{border:0;padding:0;background:none}
+.pslot.full .scrap{font-size:13px;width:100%;--r:0deg}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;align-content:start}
+.palette .scrap{font-size:14px;width:100%}
+.palette .scrap.used{opacity:.25;pointer-events:none}
+
+/* ---------- dev ---------- */
+.board3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.col{background:var(--paper-2);border-radius:10px;padding:10px;min-height:150px;min-width:0;display:grid;align-content:start;gap:8px}
+.col h4{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft)}
+.story{font-size:13px;padding:8px 10px;line-height:1.3;overflow-wrap:anywhere}
+.story i{font-style:normal;font-size:11px;font-weight:800;background:rgba(255,255,255,.3);border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pnode{background:var(--paper-3);color:var(--ink-soft);font-size:13px;font-weight:800;padding:8px 12px;border-radius:9px 5px 8px 6px}
+.pnode.run{background:var(--mustard);color:var(--ink);animation:pulse .6s infinite}
+.pnode.ok{background:var(--leaf);color:#fff}
+.pnode.fail{background:var(--tomato);color:#fff}
+.arrow{color:var(--ink-soft);font-weight:800}
+.ev-q{font-size:18px;font-weight:700}
+.ev-r{font-size:15px;background:var(--paper-2);border-radius:10px;padding:10px 12px}
+.log{margin:0;padding-left:20px;font-size:15px;color:var(--ink-soft);display:grid;gap:4px}
+.warn{color:var(--bad);font-weight:700;font-size:15px}
+
+/* ---------- QA ---------- */
+.qa-bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-weight:800;font-variant-numeric:tabular-nums}
+.timer{font-family:var(--display);font-weight:700;font-size:26px}
+.timer.low{color:var(--bad)}
+.app-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:470px;width:100%;margin:0 auto;background:var(--paper-2);padding:12px;border-radius:14px}
+.tile{--c:var(--cobalt);font-size:14px;text-align:center;padding:16px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;min-height:54px}
+.tile.act{--c:var(--leaf)}
+.tile.b-tilt{--r:5deg}
+.tile.b-color{--c:#c4479a}
+.tile.squashed{opacity:.5;text-decoration:line-through}
+.tile.missed{outline:3px dashed var(--bad);outline-offset:2px}
+.locked-grid{filter:grayscale(.7) blur(1.5px);pointer-events:none}
+.switch{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.switch input{width:22px;height:22px;accent-color:var(--cobalt)}
+
+/* ---------- UAT ---------- */
+.fcard{border:3px solid var(--paper-2);border-radius:12px;padding:12px 14px;display:grid;gap:8px;background:#fff}
+.fcard .who{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+.fcard .txt{font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:0;border-radius:999px;padding:8px 14px;background:var(--paper-2);font-size:14px;font-weight:800;min-height:42px}
+.opt[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* ---------- beta ---------- */
+.street{position:relative;height:200px;border-radius:8px;overflow:hidden;background:#bfe3f7}
+.street .sun{position:absolute;left:8%;top:18px;width:46px;height:46px;border-radius:50%;background:var(--mustard)}
+.street .bld{position:absolute;bottom:40px;background:var(--c);border-radius:6px 9px 0 0}
+.street .road{position:absolute;left:0;right:0;bottom:0;height:42px;background:#8d96a3}
+.street .shop{position:absolute;right:7%;bottom:40px;width:150px;height:96px;background:var(--tomato);border-radius:5px 8px 0 0;display:grid;justify-items:center}
+.street .sign{margin-top:-14px;background:var(--mustard);font-family:var(--display);font-weight:700;font-size:14px;padding:4px 10px;border-radius:6px 3px 7px 4px;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;transform:rotate(-2deg)}
+.street .door{width:34px;height:52px;background:var(--ink);border-radius:4px 4px 0 0;align-self:end}
+.walker{position:absolute;bottom:18px;left:-60px;width:44px;animation:walk 3.4s linear forwards}
+@keyframes walk{90%{opacity:1}100%{left:calc(93% - 80px);opacity:0}}
+.walker .av{animation:step .35s ease-in-out infinite}
+@keyframes step{50%{transform:translateY(-3px)}}
+.reviews{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.rev{display:flex;gap:10px;align-items:center;background:var(--paper-2);border-radius:12px;padding:10px 12px;animation:snap .4s both}
+.rev .av{width:46px}
+.rev p{font-size:14px;font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.metric{padding:12px 14px}
+.metric span{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.85}
+.metric b{font-family:var(--display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
+
+/* ---------- result + report ---------- */
+.score-big{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.score-num{font-family:var(--display);font-weight:700;font-size:64px;line-height:1}
+.score-num small{font-size:20px;color:var(--ink-soft)}
+.studs{display:flex;gap:6px}
+.studs i{width:28px;height:28px;border-radius:50% 45% 52% 48%;background:var(--paper-3)}
+.studs i.on{background:var(--mustard)}
+.levelup{font-family:var(--display);font-weight:700;font-size:22px;background:var(--leaf);color:#fff;border-radius:10px 6px 11px 7px;padding:8px 14px;justify-self:start;transform:rotate(-2deg);animation:stamp .45s both}
+.lines{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+.rep-row{display:grid;grid-template-columns:140px minmax(0,1fr) 40px;gap:10px;align-items:center;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:14px;border-radius:7px;background:var(--paper-2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:7px;background:var(--c,var(--leaf))}
+.cardimg{width:100%;max-width:520px;justify-self:center;border-radius:6px;box-shadow:var(--lift);background:var(--paper-2);aspect-ratio:1080/1350}
+.share{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.share a{text-decoration:none}
+.posttext{width:100%;min-height:110px;border:2px solid var(--paper-3);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;resize:vertical;background:#fff}
+
+
+/* ===== v3: Fealty blend ===== */
+h2{font-weight:600;letter-spacing:-.02em}
+h3{font-weight:600}
+.sheet{border-radius:24px;box-shadow:var(--e2);padding:28px;animation:rise .45s var(--ease) both}
+#app>*:nth-child(2){animation-delay:.06s}#app>*:nth-child(3){animation-delay:.12s}#app>*:nth-child(4){animation-delay:.18s}#app>*:nth-child(5){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.intro .sheet{animation:none}
+.intro{animation:rise .45s var(--ease) both}
+.hud{border-radius:24px;box-shadow:var(--e1);border:0}
+.btn{--c:var(--mint);--t:var(--on-mint);border-radius:8px;font-weight:600;font-size:17px;min-height:48px;box-shadow:var(--e1);transition:transform .1s ease,filter .1s ease}
+.btn:not(:disabled):hover{transform:none;filter:brightness(.95)}
+.btn:not(:disabled):active{transform:scale(.98);box-shadow:var(--e1)}
+.btn.sec{--c:#fff;--t:var(--ink);box-shadow:inset 0 0 0 1.5px var(--border),var(--e1)}
+.how{background:var(--tint);border-radius:12px}
+.say{background:var(--paper-2);border-radius:12px}
+.chip{background:var(--paper-2)}
+.xp .bar{height:8px}
+.xp .bar i{background:var(--accent)}
+.meter>i{background:var(--accent)}
+.role{color:var(--good)}
+.label{color:var(--ink-soft)}
+.studs i.on{background:var(--mint)}
+.levelup{background:var(--night);color:#fff;border-radius:12px}
+.badge{border-radius:999px}
+.node.done .dot{background:var(--accent)}
+.node.next .dot{background:var(--mint);color:var(--on-mint)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:24px;align-items:center;padding-block:16px 4px}
+.hero-text{display:grid;gap:22px;position:relative}
+.logo-row{display:flex;gap:3px;align-items:center}
+.logo-row span{font-family:var(--display);font-weight:700;font-size:20px;width:30px;height:34px;display:grid;place-items:center;color:#fff;background:var(--c);border-radius:var(--cut);transform:rotate(var(--r));box-shadow:var(--lift);animation:cutIn .6s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i) * 70ms)}
+.logo-row span.dark{color:var(--ink)}
+.display{font-family:var(--display);font-weight:600;font-size:clamp(42px,7vw,72px);line-height:1.06;letter-spacing:-.025em;animation:rise .6s var(--ease) both}
+.display em{font-style:normal;position:relative;white-space:nowrap}
+.display em svg{position:absolute;left:0;right:0;bottom:-.18em;width:100%;height:.32em;overflow:visible}
+.display em path{stroke:var(--mint);stroke-width:5;fill:none;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;animation:draw .9s .5s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lead{font-size:18px;color:var(--ink-soft);max-width:34em}
+.tchips{display:flex;gap:0;flex-wrap:wrap}
+.tchip{background:#fff;border-radius:12px;padding:10px 16px;box-shadow:var(--e1);transform:rotate(-4deg);margin:0 -4px 0 0;display:flex;align-items:baseline;gap:6px;animation:drop .5s var(--ease) both;animation-delay:calc(.3s + var(--i) * 60ms)}
+.tchip:nth-child(2){transform:rotate(3deg) translateY(6px)}
+.tchip b{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.tchip span{font-size:14px;color:var(--ink-soft)}
+@keyframes drop{from{opacity:0;transform:translateY(-16px)}}
+.fan{position:relative;height:360px}
+.fan .card{position:absolute;left:50%;top:50%;width:210px;height:280px;margin:-140px 0 0 -105px;border-radius:16px;box-shadow:var(--e3);padding:18px;display:grid;align-content:start;gap:8px;animation:fan .7s var(--ease) both;animation-delay:.25s}
+.fan .c1{background:#fff;--a:-14deg;--x:-70px}
+.fan .c2{background:var(--night);color:#fff;--a:0deg;--x:0px;z-index:1}
+.fan .c3{background:rgba(255,255,255,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);--a:13deg;--x:70px;z-index:2}
+@keyframes fan{from{transform:rotate(0) translateX(0)}to{transform:rotate(var(--a)) translateX(var(--x))}}
+.fan .card{transform:rotate(var(--a)) translateX(var(--x))}
+.fan .k{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.7}
+.fan .hand{font-family:var(--hand);font-size:26px;font-weight:700;line-height:1.05;color:var(--cobalt)}
+.fan .mini-bmc{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;height:120px}
+.fan .mini-bmc i{border-radius:3px;background:rgba(255,255,255,.14)}
+.fan .mini-bmc i:nth-child(3){background:var(--mint)}
+.fan .grade{font-size:72px;font-weight:700;line-height:1;color:var(--ink)}
+.phase-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+
+/* footer + pages */
+.foot{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;align-items:center;padding:8px 4px;font-size:15px;color:var(--ink-soft)}
+.foot nav{display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot a{color:var(--ink-soft);text-decoration:none;font-weight:500;padding:6px 0}
+.foot a:hover{color:var(--ink)}
+.snd{border:0;background:#fff;border-radius:8px;padding:8px 12px;font-weight:600;font-size:14px;box-shadow:var(--e1);min-height:40px}
+.doc{display:grid;gap:14px;max-width:68ch}
+.doc h3{margin-top:8px}
+.doc p,.doc li{color:var(--ink-soft)}
+.doc ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.tcard{display:flex;gap:12px;align-items:center;background:var(--paper-2);border-radius:16px;padding:12px}
+.tcard .av{width:58px}
+.tcard b{display:block;font-weight:600}
+.tcard small{color:var(--ink-soft);font-size:14px;line-height:1.35;display:block}
+
+/* production cycle */
+.cycle{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:center}
+.cycle .ringbox svg{width:250px;height:250px;overflow:visible}
+.cycle .ring{fill:none;stroke:var(--border);stroke-width:3;stroke-dasharray:6 8;animation:ringspin 8s linear infinite;transform-origin:125px 125px}
+@keyframes ringspin{to{transform:rotate(360deg)}}
+.cycle .nd circle{fill:#fff;stroke:var(--border);stroke-width:2}
+.cycle .nd text{font-family:var(--body);font-size:12px;font-weight:600;fill:var(--ink-soft);text-anchor:middle}
+.cycle .nd.done circle{fill:var(--tint);stroke:var(--accent)}
+.cycle .nd.on circle{fill:var(--mint);stroke:var(--on-mint);animation:nodepop .5s 1.1s var(--ease) both;transform-box:fill-box;transform-origin:center}
+.cycle .nd.on text{fill:var(--ink)}
+@keyframes nodepop{0%{transform:scale(1)}50%{transform:scale(1.45)}100%{transform:scale(1.15)}}
+.cycle .runner{transform-origin:125px 125px;animation:orbit 1.2s var(--ease) forwards}
+@keyframes orbit{from{transform:rotate(var(--from))}to{transform:rotate(var(--to))}}
+.cycle .center{font-family:var(--display);font-weight:700;font-size:15px;text-anchor:middle;fill:var(--ink)}
+.cycle-text{display:grid;gap:10px}
+.cycle-text .av{width:84px;animation:popin .5s 1.2s var(--ease) both}
+@keyframes popin{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.08)}100%{transform:none}}
+.cycle-bar{height:6px;border-radius:999px;background:var(--tint);overflow:hidden}
+.cycle-bar i{display:block;height:100%;background:var(--accent);animation:fillbar 2.6s linear forwards}
+@keyframes fillbar{from{width:0}to{width:100%}}
+
+/* pop-ups + confetti */
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.confetti i{position:absolute;top:-14px;left:var(--x);width:10px;height:6px;border-radius:2px;background:var(--c);transform:rotate(var(--r));animation:fall var(--d) cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes fall{to{transform:translateY(var(--y)) rotate(calc(var(--r) + 540deg));opacity:0}}
+.popup{position:relative;display:inline-flex;align-items:center;gap:8px;justify-self:start;background:var(--night);color:#fff;border-radius:12px;padding:8px 14px;font-weight:600;animation:popin .45s var(--ease) both}
+.pop-in{animation:popin .45s var(--ease) both}
+
+/* pitch simulation */
+.room{position:relative;background:var(--night);border-radius:24px;padding:18px;display:grid;gap:14px;overflow:hidden;box-shadow:var(--e3);animation:rise .45s var(--ease) both}
+.room::before{content:"";position:absolute;left:10%;right:10%;top:-30%;height:90%;background:radial-gradient(closest-side,rgba(255,255,220,.16),transparent);pointer-events:none}
+.room-top{display:flex;justify-content:space-between;align-items:center;color:#cfd6d0;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;position:relative}
+.live{display:inline-flex;align-items:center;gap:6px;color:#fff}
+.live::before{content:"";width:9px;height:9px;border-radius:50%;background:#ff5a4f;animation:blinkdot 1s infinite}
+@keyframes blinkdot{50%{opacity:.25}}
+.screen{position:relative;background:#fff;border-radius:12px;min-height:190px;padding:20px 22px;display:grid;gap:6px;align-content:center;box-shadow:0 0 0 6px #3a3d3d}
+.screen .kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--good)}
+.screen h3{font-size:clamp(22px,3.6vw,30px);letter-spacing:-.02em}
+.screen p{font-size:17px;color:var(--ink-soft);min-height:2.6em}
+.screen .snum{position:absolute;right:14px;bottom:10px;font-size:12px;color:var(--ink-soft);font-weight:600}
+.screen.flip{animation:slidein .45s var(--ease)}
+@keyframes slidein{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.screen .stampwrap{display:grid;place-items:center}
+.stage-row{position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;padding-top:44px}
+.presenter{display:grid;justify-items:center;gap:4px;color:#fff;font-size:12px;font-weight:600}
+.presenter .av{width:78px}
+.presenter.talk .av{animation:talk .45s ease-in-out infinite}
+@keyframes talk{50%{transform:translateY(-4px) rotate(-1deg)}}
+.boardrow{display:flex;gap:10px}
+.bm{position:relative;display:grid;justify-items:center;gap:4px;color:#fff;font-size:12px;font-weight:600}
+.bm .av{width:62px;transition:transform .2s}
+.bm.lean .av{transform:translateY(-6px) scale(1.06)}
+.bub{position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);background:#fff;color:var(--ink);font-size:12.5px;font-weight:600;line-height:1.3;padding:6px 10px;border-radius:12px;width:max-content;max-width:150px;box-shadow:var(--e2);animation:popin .3s var(--ease) both;z-index:2}
+.bub.g{background:var(--mint);color:var(--on-mint)}
+.bub.b{background:#ffe1dd;color:var(--bad)}
+.bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:inherit}
+.thinking{display:inline-flex;gap:3px}
+.thinking i{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:dots 1s infinite}
+.thinking i:nth-child(2){animation-delay:.15s}.thinking i:nth-child(3){animation-delay:.3s}
+@keyframes dots{50%{transform:translateY(-4px);opacity:.4}}
+.clock{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;color:var(--ink-soft)}
+.clock svg{width:34px;height:34px;transform:rotate(-90deg)}
+.clock .tr{fill:none;stroke:var(--tint);stroke-width:4}
+.clock .fg{fill:none;stroke:var(--accent);stroke-width:4;stroke-dasharray:88;stroke-dashoffset:0;animation:clock 15s linear forwards}
+@keyframes clock{to{stroke-dashoffset:88}}
+.phase-tag{display:inline-block;justify-self:start;background:var(--tint);color:var(--good);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
+
+/* live ops */
+.live-head{display:flex;align-items:center;gap:12px}
+.live-head .live{color:var(--bad);font-weight:700;font-size:13px;letter-spacing:.08em}
+.livebar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lstat{background:var(--night);color:#fff;border-radius:12px;padding:10px 12px;display:grid;gap:2px;min-width:0}
+.lstat span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;font-weight:600}
+.lstat b{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lq{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-height:200px;align-content:start;background:var(--paper-2);border-radius:16px;padding:14px;position:relative}
+.lq.on:empty::after{content:"All clear for now. Stay sharp!"}
+.lq:empty::after{content:"Problems will appear here when you go live";white-space:pre-line;color:var(--ink-soft);font-size:15px;grid-column:1/-1;align-self:center;text-align:center;padding-top:70px}
+.lcard{font-size:14px;padding:10px 12px 16px;display:grid;gap:4px;animation:popin .3s var(--ease) both;min-width:0}
+.lcard .tl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.lcard .life{position:absolute;left:10px;right:10px;bottom:6px;height:4px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden}
+.lcard.light .life{background:rgba(0,0,0,.12)}
+.lcard .life i{display:block;height:100%;width:100%;background:currentColor}
+.lcard.urgent{animation:urgent .5s infinite alternate}
+@keyframes urgent{to{box-shadow:0 0 0 4px rgba(196,42,54,.35),var(--lift)}}
+.lteam{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.resp{position:relative;border:0;background:#fff;border-radius:16px;box-shadow:var(--e1);padding:10px 6px 12px;display:grid;justify-items:center;gap:2px;font-weight:600;font-size:14px;min-width:0}
+.resp .av{width:56px}
+.resp small{color:var(--ink-soft);font-weight:500;font-size:12px}
+.resp .busy{width:80%;height:5px;border-radius:3px;background:var(--tint);overflow:hidden;margin-top:4px}
+.resp .busy i{display:block;height:100%;width:0;background:var(--accent)}
+.resp.isbusy{opacity:.65}
+.plus{position:absolute;top:-8px;right:10px;font-weight:700;color:#fff;background:var(--good);border-radius:8px;padding:0 6px;animation:deltaUp 1s forwards}
+
+@media (max-width:620px){
+  .livebar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lq{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .resp .av{width:42px}
+  .resp{font-size:13px}
+  .hero{grid-template-columns:1fr}
+  .fan{height:300px}
+  .fan .card{width:170px;height:230px;margin:-115px 0 0 -85px}
+  .phase-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cycle{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .cycle-text{justify-items:center}
+  .cycle .ringbox svg{width:220px;height:220px}
+  .bm .av{width:48px}
+  .presenter .av{width:58px}
+  .bub{max-width:110px;font-size:11.5px}
+  .sheet{padding:18px}
+
+  body{font-size:16px}
+  .sheet{padding:16px}
+  .intro{gap:8px}
+  .intro .av{width:64px}
+  .phases{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .custom{grid-template-columns:1fr}
+  .nap-wrap{grid-template-columns:1fr}
+  .custom .preview{max-width:150px;justify-self:center}
+  .bmc{grid-template-columns:1fr;grid-template-areas:"cs" "vp" "ch" "cr" "rs" "ka" "kr" "kp" "co"}
+  .blk{min-height:0}
+  .ux-wrap{grid-template-columns:1fr;justify-items:center}
+  .board3{grid-template-columns:1fr}
+  .col{min-height:0}
+  .app-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rep-row{grid-template-columns:96px minmax(0,1fr) 34px}
+  .node:nth-child(even){padding-left:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+
+<div id="app"></div>
+
+<script>
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,props,...kids){
+  const el=document.createElement(tag);
+  for(const [k,v] of Object.entries(props||{})){
+    if(v===false||v==null) continue;
+    if(k==='class') el.className=v;
+    else if(k==='style') el.style.cssText=v;
+    else if(k==='html') el.innerHTML=v;
+    else if(k.startsWith('on')) el.addEventListener(k.slice(2),v);
+    else el.setAttribute(k,v===true?'':v);
+  }
+  for(const kid of kids.flat(Infinity)){ if(kid==null||kid===false) continue; el.append(kid.nodeType?kid:document.createTextNode(String(kid))); }
+  return el;
+}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.random()*a.length|0];
+const lc=s=>s.charAt(0).toLowerCase()+s.slice(1);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const rot=()=>`--r:${(Math.random()*4-2).toFixed(1)}deg`;
+let timers=[];
+const later=(fn,ms)=>{const id=setTimeout(fn,ms);timers.push(id);return id};
+const wait=ms=>new Promise(r=>later(r,ms));
+function clearTimers(){timers.forEach(id=>{clearTimeout(id);clearInterval(id)});timers=[]}
+function bounce(el){ el.classList.remove('bounce'); void el.offsetWidth; el.classList.add('bounce'); }
+function snap(el){ el.classList.remove('snap'); void el.offsetWidth; el.classList.add('snap'); sfx('pop'); }
+let SOUND=true; try{ SOUND=localStorage.getItem('initiate.sound')!=='off'; }catch(e){}
+let actx=null;
+function sfx(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const seq={pop:[[660,.05]],good:[[523,.07],[784,.12]],bad:[[196,.18]],win:[[523,.09],[659,.09],[784,.09],[1046,.22]],whoosh:[[330,.05],[494,.05],[740,.08]],tick:[[880,.03]],stamp:[[140,.12],[90,.1]]}[kind]||[];
+    let t=actx.currentTime+.01;
+    seq.forEach(([f,d])=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type=kind==='bad'||kind==='stamp'?'square':'triangle'; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(kind==='bad'||kind==='stamp'?.06:.12,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t+d+.03); t+=d; });
+  }catch(e){}
+}
+function confetti(host,n){
+  if(!host) return; const box=h('div',{class:'confetti','aria-hidden':'true'}); const C=['#6BE683','#f2b632','#e5533d','#3557c6','#ef8db0','#1f9e93','#9478d1'];
+  for(let i=0;i<(n||46);i++) box.append(h('i',{style:`--x:${Math.random()*100}%;--c:${C[i%C.length]};--r:${Math.random()*180|0}deg;--d:${(1.4+Math.random()*1.4).toFixed(2)}s;--y:${260+Math.random()*320|0}px;animation-delay:${(Math.random()*.25).toFixed(2)}s`}));
+  host.append(box); setTimeout(()=>box.remove(),3200);
+}
+function countUp(el,to,ms){ const t0=performance.now(); const step=t=>{ const k=Math.min(1,(t-t0)/(ms||800)); el.textContent=Math.round(to*(1-Math.pow(1-k,3))); if(k<1) requestAnimationFrame(step); }; requestAnimationFrame(step); }
+function sayBox(initial){ const el=h('p',{class:'say',role:'status','aria-live':'polite'},initial||''); el.set=(m,k)=>{el.textContent=m;el.className='say'+(k?' '+k:''); if(k==='good') sfx('good'); else if(k==='bad') sfx('bad');}; return el; }
+const fmtRM=n=>'RM '+Math.round(n).toLocaleString('en-MY');
+
+/* ================= drag + tap engine =================
+   Every piece can be dragged onto a target, or tapped to pick it up and then tapped onto a target. */
+let sel=null;
+function select(el,opts){
+  if(sel) sel.el.classList.remove('picked');
+  if(!el||(sel&&sel.el===el)){ sel=null; document.body.classList.remove('picking'); return; }
+  sel={el,opts}; el.classList.add('picked'); document.body.classList.add('picking');
+  opts.onPick&&opts.onPick();
+}
+function draggable(el,opts){
+  el.classList.add('drag'); el.tabIndex=0; el.setAttribute('role','button');
+  el.addEventListener('pointerdown',e=>{
+    if(e.button!==0||el.disabled) return;
+    const sx=e.clientX, sy=e.clientY, rect=el.getBoundingClientRect(); let ghost=null, over=null, last=null, raf=null;
+    const findOver=ev=>{ const t=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('[data-drop]'); if(t!==over){ over&&over.classList.remove('over'); over=t; over&&over.classList.add('over'); } };
+    const tick=()=>{ if(!ghost||!last){ raf=null; return; } const y=last.clientY, H=window.innerHeight; let dy=0;
+      if(y<80) dy=-Math.ceil((80-y)/5); else if(y>H-80) dy=Math.ceil((y-(H-80))/5);
+      if(dy){ window.scrollBy(0,dy); findOver(last); } raf=requestAnimationFrame(tick); };
+    try{ el.setPointerCapture(e.pointerId); }catch(_){}
+    const move=ev=>{
+      const dx=ev.clientX-sx, dy=ev.clientY-sy;
+      if(!ghost && Math.hypot(dx,dy)>8){
+        ghost=el.cloneNode(true); ghost.classList.add('ghost'); ghost.classList.remove('picked');
+        Object.assign(ghost.style,{position:'fixed',left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',margin:'0',zIndex:100,pointerEvents:'none'});
+        document.body.append(ghost); el.classList.add('lifted'); select(null);
+      }
+      if(ghost){
+        ghost.style.transform=`translate(${dx}px,${dy}px) rotate(-3deg) scale(1.04)`;
+        last={clientX:ev.clientX,clientY:ev.clientY}; findOver(last);
+        if(!raf) raf=requestAnimationFrame(tick);
+      }
+    };
+    const up=()=>{
+      el.removeEventListener('pointermove',move); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up);
+      if(raf){ cancelAnimationFrame(raf); raf=null; }
+      if(ghost){ const g=ghost; ghost=null; g.remove(); el.classList.remove('lifted'); if(over){ over.classList.remove('over'); opts.onDrop(over); } }
+      else select(el,opts);
+    };
+    el.addEventListener('pointermove',move); el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up);
+  });
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); select(el,opts); } });
+}
+function dropTarget(el,onEmptyTap){
+  el.dataset.drop='1';
+  el.addEventListener('click',()=>{ if(sel){ const s=sel; select(null); s.opts.onDrop(el); } else if(onEmptyTap) onEmptyTap(); });
+}
+
+/* ================= avatars (paper stickers) ================= */
+function avatarSVG(o){
+  const sk=o.skin||'#e1ad85', c=o.color||'#3557c6', hr=o.hair||'#2a1d14', f=o.g==='f', tud=o.hw==='tudung';
+  const sh='rgba(0,0,0,.16)';
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">`;
+  if(f&&!tud) s+=`<path d="M30 66 Q28 30 60 30 Q92 30 90 66 L95 106 Q60 114 25 106 Z" fill="${hr}"/>`;
+  s+=`<path d="M14 140 Q14 101 60 99 Q106 101 106 140 Z" fill="${c}"/>`;
+  if(o.style==='smart') s+=`<path d="M47 100 L60 126 L73 100 Q60 98 47 100Z" fill="#fff"/><path d="M60 126 L55 140 L65 140Z" fill="${sh}"/>`;
+  if(o.style==='traditional') s+=`<path d="M50 101 Q60 110 70 101" stroke="${sh}" stroke-width="6" fill="none"/><circle cx="60" cy="116" r="2.4" fill="#fff"/><circle cx="60" cy="127" r="2.4" fill="#fff"/>`;
+  if(o.style==='casual'||!o.style) s+=`<rect x="70" y="113" width="15" height="12" rx="3" fill="${sh}"/>`;
+  if(tud) s+=`<path d="M27 68 Q27 25 60 25 Q93 25 93 68 Q96 96 106 118 Q60 132 14 118 Q24 96 27 68Z" fill="${o.tcolor||'#e7a3b8'}"/><path d="M27 68 Q27 25 60 25 Q93 25 93 68" fill="none" stroke="${sh}" stroke-width="3"/>`;
+  else s+=`<rect x="52" y="84" width="16" height="18" rx="4" fill="${sk}"/>`;
+  s+= tud?`<ellipse cx="60" cy="66" rx="20" ry="23" fill="${sk}"/>`:`<circle cx="60" cy="64" r="25" fill="${sk}"/>`;
+  if(!tud){
+    if(o.hw==='none'||!o.hw) s+= f?`<path d="M35 61 Q35 36 60 36 Q86 36 86 62 Q74 50 57 48 Q47 57 35 61Z" fill="${hr}"/>`:`<path d="M35 58 Q35 35 60 35 Q86 35 85 58 Q80 46 60 46 Q42 46 35 58Z" fill="${hr}"/>`;
+    else s+=`<path d="M35 58 Q36 48 42 46 L78 46 Q84 48 85 58 Q80 52 60 52 Q40 52 35 58Z" fill="${hr}"/>`;
+  }
+  if(o.hw==='songkok') s+=`<path d="M37 51 L39 31 Q60 27 81 31 L83 51 Q60 47 37 51Z" fill="#1f1f27"/>`;
+  if(o.hw==='kopiah') s+=`<path d="M36 51 Q37 32 60 31 Q83 32 84 51 Q60 46 36 51Z" fill="#f8f8f3" stroke="#d6d2c7" stroke-width="1.5"/><path d="M42 44 H78" stroke="#d6d2c7" stroke-width="1.5"/>`;
+  if(o.hw==='cap') s+=`<path d="M35 53 Q35 31 60 31 Q85 31 85 53Z" fill="${o.capc||'#23262e'}"/><path d="M36 51 Q62 47 94 55 Q62 60 36 55Z" fill="${o.capc||'#23262e'}"/>`;
+  const ey=tud?64:63;
+  s+=`<circle cx="51" cy="${ey}" r="3.2" fill="#23262e"/><circle cx="69" cy="${ey}" r="3.2" fill="#23262e"/><path d="M52 ${ey+11} Q60 ${ey+17} 68 ${ey+11}" stroke="#23262e" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="44" cy="${ey+8}" r="4.5" fill="#f08b8b" opacity=".45"/><circle cx="76" cy="${ey+8}" r="4.5" fill="#f08b8b" opacity=".45"/>`;
+  return s+'</svg>';
+}
+function av(o,cls){ return h('div',{class:'av'+(cls?' '+cls:''),'aria-hidden':'true',html:avatarSVG(o)}); }
+
+/* ================= content ================= */
+const SKINS=['#f6d7bd','#f0c8a4','#e1ad85','#c68a5e','#9a6440','#6e4528'];
+const COLORS=['#3557c6','#e5533d','#1f9e93','#9478d1','#45a865','#2b3446'];
+const HAIRS=['#2a1d14','#16110d','#6b3d1c'];
+const HEADWEAR={m:[['none','None'],['cap','Cap'],['songkok','Songkok'],['kopiah','Kopiah']],f:[['none','None'],['tudung','Tudung'],['cap','Cap']]};
+const STYLES={m:[['casual','Casual'],['smart','Smart'],['traditional','Baju Melayu']],f:[['casual','Casual'],['smart','Smart'],['traditional','Baju kurung']]};
+
+const IDEAS=[
+  {id:'cafe',name:'Kopi Corner',kind:'Open a business',pitch:'A grab-and-go kopi and kuih kiosk next to office towers, with pre-order by app.',customer:'office workers',product:'kopi',catalog:'menu',unit:'drink',price:6,freq:12,color:'var(--tomato)',
+    napkin:{problem:['Office workers lose 20 minutes queuing for breakfast every morning','People like drinking coffee'],
+            who:['The 3,000 office workers within 300 m of the kiosk','Everyone who gets thirsty'],
+            solution:['Pre-order in the app and pick up at the counter in 60 seconds','A nicer cafe with good vibes'],
+            why:['Pickup in 60 seconds beats a 20-minute queue','Our coffee is simply the best']},
+    bmc:{kp:'Local kuih makers and a coffee bean roaster',ka:'Brewing, pre-order fulfilment, morning rush prep',kr:'Kiosk lease near the towers, ordering app, 2 baristas',vp:'Breakfast ready in 60 seconds, no queue',cr:'Loyalty stamps in the app and friendly service',ch:'Ordering app, kiosk counter, office WhatsApp groups',cs:'Office workers in the 3 nearby towers',co:'Rent, ingredients, barista wages, app fees',rs:'RM 6 per drink plus kuih add-ons'}},
+  {id:'batik',name:'Batik Loom',kind:'Sell a product',pitch:'An online shop selling handmade batik straight from village artisans.',customer:'young professionals',product:'batik',catalog:'catalogue',unit:'piece',price:180,freq:.4,color:'var(--lilac)',
+    napkin:{problem:['Artisans keep only 40% of each sale because middlemen take the rest','Batik is beautiful'],
+            who:['Professionals aged 25 to 40 who buy gifts and office wear online','All fashion lovers worldwide'],
+            solution:['A shop where artisans list directly, with their story and a sizing guide','Post nice photos on social media'],
+            why:['Every piece is traceable to the artisan who made it','We are passionate about culture']},
+    bmc:{kp:'Village artisan cooperatives and a courier partner',ka:'Curating pieces, photography, order fulfilment',kr:'Online shop platform, artisan network, photo studio',vp:"Authentic handmade batik with the maker's story",cr:'Personal gift notes and artisan story cards',ch:'Online shop, Instagram, corporate gift catalogues',cs:'Professionals aged 25 to 40 buying gifts and office wear',co:'Platform fees, photography, shipping, marketing',rs:'15% commission on each order'}},
+  {id:'laundry',name:'SpinSwift',kind:'Launch a service',pitch:'Laundry pickup and delivery, booked by app, for busy families.',customer:'busy families',product:'laundry',catalog:'service list',unit:'bag',price:89,freq:1,color:'var(--teal)',
+    napkin:{problem:['Dual-income families spend 5 hours a week on laundry','Laundry is boring'],
+            who:['Families in condos with no space for a dryer','Anyone who wears clothes'],
+            solution:['Book a 2-hour pickup slot and get clothes back folded in 48 hours','A laundry shop with longer opening hours'],
+            why:['Guaranteed 48-hour turnaround with live tracking','Better service than the others']},
+    bmc:{kp:'Partner laundromats and a delivery rider fleet',ka:'Scheduling pickups, washing, folding, delivery',kr:'Booking app, vans, partner laundromat capacity',vp:'Clothes back folded in 48 hours, zero effort',cr:'Subscription with live tracking and quick chat support',ch:'Booking app, condo notice boards, referrals',cs:'Busy families living in condos',co:'Rider pay, laundromat fees, van fuel, app hosting',rs:'RM 89 monthly subscription for 4 bags'}},
+  {id:'ai',name:'TanyaBot',kind:'Build an AI project',pitch:'An AI assistant that answers customer questions for small shops on WhatsApp, 24/7.',customer:'small shop owners',product:'AI support',catalog:'answer library',unit:'chat',price:99,freq:1,cta:'Start free trial',color:'var(--cobalt)',
+    napkin:{problem:['Small shops miss 40% of customer messages after 6 pm','Customer service is hard'],
+            who:['Online shops with 1 to 10 staff selling through WhatsApp','Every business in the world'],
+            solution:["An AI that answers stock, price and delivery questions from the shop's own data",'A chatbot that uses the latest AI'],
+            why:["Replies in 5 seconds in Malay and English, trained on each shop's catalogue",'AI is the future']},
+    bmc:{kp:'AI model provider and a WhatsApp messaging partner',ka:'Training on shop data, checking answers, improving prompts',kr:'AI platform, shop data connectors, a small ML team',vp:'Never miss a customer message, even at 2 am',cr:'Self-serve setup and a weekly answer-quality report',ch:'WhatsApp Business, seller communities, app marketplaces',cs:'Small online shops selling on WhatsApp',co:'AI model usage, cloud hosting, salaries',rs:'RM 99 monthly subscription per shop'},
+    storyText:{browse:'Upload my product list so the AI answers from it',pay:'Subscribe and pay by card or FPX',admin:'Dashboard to review and correct AI answers',track:'See which questions the AI could not answer',login:'Connect my WhatsApp Business number',receipt:'Monthly invoice by email',review:'Customers rate each AI answer',loyalty:'Referral credits for inviting other shops',chatbot:'AI voice calls with a celebrity voice',ar:'AI-generated 3D product videos'},
+    qa:['Search answers','Start free trial','Plan: Basic','RM 99.00','Upload catalogue','Total RM 99.00','Pay now','Chat #1042','Train AI','Reply sent','Sign in','Help']},
+  {id:'hr',name:'PeopleFlow',kind:'Build an HR project',pitch:'One app for leave, claims and onboarding, so HR stops chasing paper forms.',customer:'HR teams',product:'HR',catalog:'employee directory',unit:'form',price:400,freq:1,cta:'Apply leave',color:'var(--pink)',
+    napkin:{problem:['HR spends 2 days a month chasing leave and claim forms','HR is boring paperwork'],
+            who:['Companies with 30 to 300 staff still using paper or Excel','All employees everywhere'],
+            solution:['Staff apply for leave and claims on their phone, and managers approve in one tap','A nicer HR portal'],
+            why:['Approvals in minutes and payroll-ready reports in one click','Our app looks modern']},
+    bmc:{kp:'Payroll software providers and an e-signature partner',ka:'Onboarding companies, support, building approval workflows',kr:'Cloud HR platform, payroll integrations, support team',vp:'No more paper: leave, claims and onboarding in one app',cr:'An onboarding call and in-app chat support',ch:'HR communities, LinkedIn, accounting firm referrals',cs:'Companies with 30 to 300 staff',co:'Cloud hosting, sales team, support salaries',rs:'RM 8 per employee per month'},
+    storyText:{browse:'See the employee directory and org chart',pay:'Apply for leave and claims on my phone',admin:'Managers approve or reject in one tap',track:'Track the status of my request live',login:'Sign in with my company email',receipt:'Email confirmation for each approval',review:'Rate the onboarding experience',loyalty:'Peer kudos points',ar:'VR office tour for new hires'},
+    qa:['Search staff','Apply leave','Days: 2','RM 120.00 claim','Upload receipt','Total RM 240.00','Submit','Request #1042','Track status','Email sent','Sign in','Help']},
+  {id:'dash',name:'PulseBoard',kind:'Build a dashboard project',pitch:"A live sales dashboard, so retail managers see today's numbers without waiting for Excel reports.",customer:'retail managers',product:'dashboard',catalog:'KPI board',unit:'report',price:299,freq:1,cta:'View today',color:'var(--night)',
+    napkin:{problem:["Store managers wait 3 days for last week's sales report in Excel",'Data is important'],
+            who:['Retail chains with 5 to 50 outlets','Anyone who likes charts'],
+            solution:['A live dashboard that pulls sales from every till every 15 minutes','Lots of beautiful charts'],
+            why:['Spot a slow outlet the same day, not next week','Our charts are the prettiest']},
+    bmc:{kp:'POS system vendors and a cloud data warehouse',ka:'Connecting POS data, building KPIs, data quality checks',kr:'Data pipelines, dashboard platform, data analysts',vp:"Today's sales by outlet, live, on any phone",cr:'Monthly KPI review call and help setting up alerts',ch:'POS vendor marketplaces, retail associations, direct sales',cs:'Retail chains with 5 to 50 outlets',co:'Cloud data costs, engineers, sales',rs:'RM 299 per outlet per month'},
+    storyText:{browse:"See today's sales by outlet",pay:'Connect our POS system securely',admin:'Admin sets KPIs and targets per outlet',track:'Get an alert when an outlet drops below target',login:'Sign in with my company email',receipt:'Weekly PDF summary by email',review:'Comment on a chart for my team',loyalty:'Badges for outlets that beat targets',ar:'3D globe of every outlet'},
+    qa:['Search outlet','Refresh','Period: Today','RM 12,400.00','Filter','Total RM 98,000.00','Export','Outlet #1042','Set alert','Report sent','Sign in','Help']},
+  {id:'shop',name:'KedaiKu',kind:'Build an e-commerce store',pitch:'An online grocery store for neighbourhood sundry shops, with 2-hour delivery.',customer:'busy households',product:'groceries',catalog:'product catalogue',unit:'item',price:85,freq:3,cta:'Add to cart',color:'var(--leaf)',
+    napkin:{problem:['Families waste an hour per trip queuing at the hypermarket','Shopping is tiring'],
+            who:['Households within 5 km of partner sundry shops','Everyone who eats'],
+            solution:['Order from your local shop online and get it delivered in 2 hours','Another shopping app'],
+            why:['Neighbourhood prices with 2-hour delivery and no minimum order','We have more products than anyone']},
+    bmc:{kp:'Local sundry shops and delivery riders',ka:'Listing products, picking orders, last-mile delivery',kr:'Store app, rider network, shop stock feeds',vp:'Groceries from your local shop in 2 hours',cr:'Order tracking, easy refunds, weekly deals',ch:'Mobile app, Facebook groups, flyers in shops',cs:'Busy households near partner shops',co:'Rider pay, payment fees, app hosting, marketing',rs:'10% commission per order plus a RM 4 delivery fee'}},
+];
+const NAPKIN_LINES=[['problem','The problem'],['who','Who it is for'],['solution','My solution'],['why','Why it wins']];
+const BMC_BLOCKS=[
+  ['kp','Key partners','Who helps you?'],['ka','Key activities','What must you do every day?'],['kr','Key resources','What do you need to have?'],
+  ['vp','Value proposition','Why customers choose you'],['cr','Customer relationships','How you keep customers'],['ch','Channels','How you reach customers'],
+  ['cs','Customer segments','Who you serve'],['co','Cost structure','What you spend money on'],['rs','Revenue streams','How money comes in'],
+];
+
+const NPC={
+  aisha:{g:'f',hw:'tudung',style:'smart',color:'#2b3446',skin:'#c68a5e',tcolor:'#9fc4e8'},
+  daniel:{g:'m',hw:'none',style:'smart',color:'#5a3e8c',skin:'#f0cfae',hair:'#4a2e17'},
+  mei:{g:'f',hw:'none',style:'smart',color:'#9a2b2b',skin:'#f6d7bd',hair:'#16110d'},
+  raj:{g:'m',hw:'none',style:'smart',color:'#3557c6',skin:'#8d5a3b',hair:'#0f0b08'},
+  sofia:{g:'f',hw:'none',style:'casual',color:'#e5533d',skin:'#f0c8a4',hair:'#6b3d1c'},
+  hafiz:{g:'m',hw:'kopiah',style:'traditional',color:'#1f9e93',skin:'#b97d52',hair:'#1b130e'},
+  lina:{g:'f',hw:'tudung',style:'casual',color:'#9478d1',skin:'#f6d7bd',tcolor:'#f2b632'},
+  ken:{g:'m',hw:'cap',style:'casual',color:'#45a865',skin:'#d7a27a',capc:'#e5533d'},
+  tom:{g:'m',hw:'none',style:'casual',color:'#ef7a19',skin:'#efc29b',hair:'#8a5a2b'},
+  priya:{g:'f',hw:'none',style:'casual',color:'#f2b632',skin:'#9a6440',hair:'#16110d'},
+  nadia:{g:'f',hw:'tudung',style:'smart',color:'#1f9e93',skin:'#e1ad85',tcolor:'#2b3446'},
+};
+
+const STORIES=[
+  {id:'browse', t:'Browse the {catalog} with photos and prices',v:8,e:3,core:1},
+  {id:'pay',    t:'Pay by card, FPX or e-wallet',v:9,e:5,core:1},
+  {id:'admin',  t:'Staff dashboard to manage incoming orders',v:7,e:5,core:1},
+  {id:'track',  t:'Track my order status live',v:7,e:4},
+  {id:'login',  t:'Sign in with my phone number',v:5,e:3},
+  {id:'receipt',t:'Get an email receipt',v:3,e:1},
+  {id:'review', t:'Rate and review after my order',v:4,e:3},
+  {id:'loyalty',t:'Collect loyalty points',v:4,e:5},
+  {id:'dark',   t:'Dark mode',v:1,e:2},
+  {id:'chatbot',t:'AI chatbot with a fun personality',v:2,e:6,trap:1},
+  {id:'ar',     t:'3D / AR preview of every {unit}',v:2,e:8,trap:1},
+];
+const TAGS=['M','S','C','W'], TAGNAME={M:'Must',S:'Should',C:'Could',W:"Won't"};
+const REQS=[
+  {t:'The app should be fast.',vague:1,fix:'Given a 4G connection, when I open the {catalog}, then it loads in under 2 seconds.'},
+  {t:'Checkout accepts card, FPX and e-wallet payments.',vague:0},
+  {t:'Users should find ordering easy.',vague:1,fix:'Given a first-time user, when they place an order, then they finish in under 90 seconds without help.'},
+  {t:'Order status updates within 30 seconds of staff changing it.',vague:0},
+  {t:'The system must be secure.',vague:1,fix:'Given a card payment, when card details are entered, then they go straight to the payment gateway and are never stored on our servers.'},
+  {t:'A receipt email is sent within 1 minute of payment.',vague:0},
+  {t:'It should look modern.',vague:1,fix:'Given any screen, when it is reviewed, then it uses the approved colour and type styles and passes WCAG AA contrast.'},
+  {t:'Staff can refund an order up to 7 days after purchase.',vague:0},
+];
+const UXC=[
+  {id:'top',    label:'Top bar: {name} logo and cart',k:'good',c:'var(--night)'},
+  {id:'search', label:'Search the {catalog}',k:'good',c:'var(--teal)'},
+  {id:'grid',   label:'{catalog} grid with photos and prices',k:'good',core:1,c:'var(--cobalt)'},
+  {id:'cta',    label:'Big "{cta}" button',k:'good',core:1,c:'var(--leaf)'},
+  {id:'nav',    label:'Bottom tabs: Home, Orders, Account',k:'good',c:'var(--night)'},
+  {id:'reviews',label:'Customer reviews strip',k:'ok',c:'var(--kraft)'},
+  {id:'popup',  label:'Pop-up: "Subscribe to our newsletter!"',k:'bad',c:'var(--tomato)'},
+  {id:'video',  label:'Auto-playing video banner',k:'bad',c:'var(--lilac)'},
+  {id:'ads',    label:'Three ad banners',k:'bad',c:'var(--pink)'},
+  {id:'tiny',   label:'Tiny grey "checkout" link',k:'bad',c:'#9aa0ab'},
+];
+const EVENTS=[
+  {who:'Ken, developer',q:'We could squeeze one more story in if we skip writing unit tests this sprint.',
+   opts:[{t:'Skip the tests',fx:{cap:3,debt:2},flag:'skippedTests',r:'Faster now, but the untested code adds tech debt.'},
+         {t:'Keep writing tests',fx:{quality:3},best:1,r:'Steady pace. Quality goes up.'}]},
+  {who:'Aisha, CEO',q:'Mid-sprint, the CEO asks for a "quick" extra feature.',
+   opts:[{t:'Squeeze it in now',fx:{cap:-3,quality:-2,value:1},r:'The sprint loses focus and planned stories slip.'},
+         {t:'Add it to the backlog',fx:{quality:2},best:1,r:'Sofia protects the sprint goal. The idea waits for the next sprint planning.'}]},
+  {who:'Priya, DevOps',q:"The payment provider's test environment is down for two days.",
+   opts:[{t:"Wait until it's back",fx:{cap:-4},r:'Two idle days for the payment work.'},
+         {t:'Mock it and write contract tests',fx:{cap:-1,quality:1},best:1,r:'Work continues against a mock. Small cost, no blocker.'}]},
+  {who:'Sprint retrospective',q:'The team says code reviews take too long and block work.',
+   opts:[{t:'Try pair programming',fx:{cap:2,quality:2},best:1,r:'Reviews happen while coding. Flow improves.'},
+         {t:'No time for process talk',fx:{debt:1},r:'The bottleneck stays and shortcuts creep in.'}]},
+  {who:'Priya, DevOps',q:'The staging server keeps crashing under load tests.',
+   opts:[{t:'Add monitoring and auto-scaling as code',fx:{budget:-2,fail:-.1,quality:2},best:1,r:'Costs RM 2k, and the pipeline gets far more reliable.'},
+         {t:'Restart it and move on',fx:{debt:1,fail:.1},r:'Back up for now. It will crash again.'}]},
+];
+const QA_LABELS=['Search {catalog}','Add to cart','Qty: 1','RM 12.00','Apply voucher','Total RM 24.00','Pay now','Order #1042','Track order','Receipt sent','Sign in','Help'];
+const BUGDESC={typo:'a spelling mistake',neg:'a negative amount',tilt:'a crooked layout',color:'the wrong colour',undef:'"undefined" instead of text',dup:'its label twice'};
+const UAT_BASE=[
+  {who:'Daniel, CFO',t:'Refunds for orders paid with a voucher show RM 0.00.',k:'defect'},
+  {who:'Aisha, CEO',t:'Can we add a celebrity video to the home screen before launch?',k:'scope'},
+  {who:'Mei, COO',t:'Orders placed after 10 pm do not appear on the staff dashboard.',k:'defect'},
+  {who:'Marketing',t:'The button red is one shade off our brand colour.',k:'cosmetic'},
+  {who:'Aisha, CEO',t:'We need a full loyalty programme with member tiers before go-live.',k:'scope'},
+];
+const REVIEWS={
+  5:['Ordered in 30 seconds. Take my money.','Finally! This saves me so much time.','Told my whole office about it.'],
+  4:['Really good. Wish it had a few more options.','Smooth. I will use it again.','Nice and simple.'],
+  3:['It is okay. Took me a while to find things.','Decent, but it froze once.','Not bad, not amazing.'],
+  2:['Confusing screens. I gave up halfway.','Too many pop-ups and bugs.','Felt unfinished.'],
+  1:['Payment failed twice. Uninstalled.','It does not do what it promised.','Crashed on the first try.'],
+};
+const LESSON={
+  napkin:'Make each napkin line specific: a measurable problem, a named customer, a clear solution, a real edge.',
+  bmc:'Fill all nine BMC blocks before you pitch. It shows how the business actually works.',
+  pitch:'Management funds clarity: a real problem, real numbers, and a cheap way to test.',
+  pm:'Plan a balanced team and keep a budget reserve. QA and DevOps pay for themselves.',
+  po:'Prioritise by value per effort. Shiny extras like AR rarely belong in a first release.',
+  pa:'Every requirement should be testable. "Fast" means nothing; "loads in 2 seconds on 4G" does.',
+  ux:'Put the core action front and centre. Remove pop-ups and clutter.',
+  dev:'Protect the sprint from scope creep and keep writing tests. Tech debt comes back as bugs.',
+  qa:'Bring QA in early. Every bug that escapes costs more to fix later.',
+  uat:'In UAT, fix real defects and move new feature requests to the backlog.',
+  live:'On launch day, send each problem to the right person fast. Keep servers healthy first.',
+  beta:'Real users judge the whole chain. Every role adds or removes value.',
+};
+const BADGES=[
+  {id:'sharp_napkin',name:'Sharp Napkin',how:'Every napkin line was specific.',c:'var(--tomato)'},
+  {id:'canvas_pro',name:'Canvas Pro',how:'Placed all 9 BMC cards with no mistakes.',c:'var(--cobalt)'},
+  {id:'first_pitch',name:'Funded First Time',how:'The board said yes on your first pitch.',c:'var(--leaf)'},
+  {id:'lean_team',name:'Lean Team',how:'A balanced team with a healthy reserve.',c:'var(--teal)'},
+  {id:'mvp_mindset',name:'MVP Mindset',how:'Core stories in, shiny extras out.',c:'var(--mustard)'},
+  {id:'testable',name:'Testable',how:'Caught every vague requirement.',c:'var(--lilac)'},
+  {id:'clean_screen',name:'Clean Screen',how:'No clutter on the home screen.',c:'var(--pink)'},
+  {id:'no_shortcuts',name:'No Shortcuts',how:'Never skipped tests during the sprints.',c:'var(--night)'},
+  {id:'bug_hunter',name:'Bug Hunter',how:'Found every bug in QA.',c:'var(--tomato)'},
+  {id:'scope_guardian',name:'Scope Guardian',how:'Sent every new feature request to the backlog.',c:'var(--cobalt)'},
+  {id:'firefighter',name:'Firefighter',how:'Kept uptime at 95% or more on launch day.',c:'var(--tomato)'},
+  {id:'customer_love',name:'Customer Love',how:'Average rating of 4.5 stars or more.',c:'var(--leaf)'},
+];
+const RANKS={S:'Legend',A:'Champion',B:'Finalist',C:'Contender',D:'Rookie'};
+
+/* ================= stages ================= */
+const STG=[
+  {id:'napkin',short:'Napkin', phase:'Idea', role:'Founder',        who:'You',                npc:'player',fn:()=>stNapkin()},
+  {id:'bmc',   short:'BMC',    phase:'Idea', role:'Founder',        who:'You',                npc:'player',fn:()=>stBMC()},
+  {id:'pitch', short:'Pitch',  phase:'Idea', role:'Business management',who:'Aisha, Daniel & Mei',npc:'aisha',fn:()=>stPitch()},
+  {id:'pm',    short:'Plan',   phase:'Plan', role:'Project manager',who:'Raj',                npc:'raj',   fn:()=>stPM()},
+  {id:'po',    short:'Backlog',phase:'Plan', role:'Product owner',  who:'Sofia',              npc:'sofia', fn:()=>stPO()},
+  {id:'pa',    short:'Requirements',phase:'Plan',role:'Product analyst',who:'Hafiz',          npc:'hafiz', fn:()=>stPA()},
+  {id:'ux',    short:'Design', phase:'Plan', role:'UI/UX designer', who:'Lina',               npc:'lina',  fn:()=>stUX()},
+  {id:'dev',   short:'Sprints',phase:'Build',role:'Developers + DevOps',who:'Ken & Priya',    npc:'ken',   fn:()=>stDev()},
+  {id:'qa',    short:'QA',     phase:'Build',role:'QA engineer',    who:'Tom',                npc:'tom',   fn:()=>stQA()},
+  {id:'uat',   short:'UAT',    phase:'Launch',role:'User acceptance testing',who:'Mei and the business team',npc:'mei',fn:()=>stUAT()},
+  {id:'live',  short:'Live ops',phase:'Launch',role:'Launch day war room',who:'Ken, Priya, Nadia & Sofia',npc:'priya',fn:()=>stLive()},
+  {id:'beta',  short:'Real users',phase:'Launch',role:'Launch',     who:'Your first customers',npc:'player',fn:()=>stBeta()},
+];
+const STG_TITLE={napkin:'Idea Napkin',bmc:'Business Model Canvas',pitch:'Pitch to management',pm:'Team and timeline',po:'Prioritise the backlog',pa:'Testable requirements',ux:'Design the home screen',dev:'Scrum sprints + CI/CD',qa:'Bug hunt',uat:'User acceptance testing',live:'Launch day: live ops',beta:'Launch to real users'};
+
+/* ================= state ================= */
+let S=null, lastSaved=null;
+const SAVE_KEY='initiate.v2';
+const I=()=>IDEAS.find(i=>i.id===S.ideaId)||IDEAS[0];
+const FILL_DEF={cta:'Order now'};
+const fill=s=>s.replace(/\{(\w+)\}/g,(_,k)=>I()[k]??FILL_DEF[k]??k);
+const storyT=st=>cap(fill((I().storyText&&I().storyText[st.id])||st.t));
+function newState(player){ return {player,ideaId:null,oneLiner:'',screen:'idea',stage:0,budget:0,weeks:0,quality:70,value:0,debt:0,xp:0,level:1,badges:[],flags:{},scores:{},napkinStrong:0,bmcMistakes:0,team:null,backlog:null,best:1,planned:0,ux:0,done:[],escapedBugs:[],openDefects:0,launch:null,lastResult:null}; }
+function save(){ try{ lastSaved=JSON.stringify(S); localStorage.setItem(SAVE_KEY,lastSaved); }catch(e){} }
+function loadSaved(){ try{ const v=localStorage.getItem(SAVE_KEY); return v?JSON.parse(v):null; }catch(e){ return null; } }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} lastSaved=null; }
+const need=l=>Math.round(100*Math.pow(l,1.4));
+function addXP(n){ S.xp+=n; while(S.xp>=need(S.level)){ S.xp-=need(S.level); S.level++; } }
+function playerAv(cls){ return av(S.player,cls); }
+function npcAv(key,cls){ return key==='player'?playerAv(cls):av(NPC[key],cls); }
+
+/* ================= HUD ================= */
+let prevNums=null;
+function hud(){
+  const nums={budget:S.budget,weeks:S.weeks,quality:Math.round(S.quality),debt:S.debt,value:S.value};
+  const chip=(k,label,val)=>{ const el=h('div',{class:'chip','data-k':k},h('span',{},label),val);
+    if(prevNums&&prevNums[k]!==nums[k]){ const d=+(nums[k]-prevNums[k]).toFixed(1); const goodUp=k!=='debt'&&k!=='weeks'; el.append(h('em',{class:'delta '+((d>0)===goodUp?'up':'down')},(d>0?'+':'')+d)); }
+    return el; };
+  const el=h('header',{class:'hud'},
+    h('div',{class:'hud-top'},
+      h('div',{class:'who'},playerAv(),h('div',{},h('div',{class:'nm'},S.player.name),h('div',{class:'sub'},S.ideaId?I().name:'No idea picked yet'))),
+      h('div',{class:'xp'},h('small',{},`Level ${S.level} · ${S.xp} / ${need(S.level)} XP`),h('div',{class:'bar'},h('i',{style:`width:${S.xp/need(S.level)*100}%`})))),
+    S.ideaId?h('div',{class:'chips'},
+      chip('budget','Budget',S.budget?`RM ${S.budget.toFixed(1)}k`:'not funded'),chip('weeks','Time',`week ${S.weeks}`),chip('quality','Quality',`${nums.quality}%`),chip('debt','Tech debt',S.debt),chip('value','Value',S.value)):null);
+  prevNums=nums;
+  return el;
+}
+function refreshHUD(){ const o=$('.hud'); if(o) o.replaceWith(hud()); }
+
+/* ================= render ================= */
+const app=$('#app');
+function toTop(){ try{ app.scrollIntoView({block:'start'}); }catch(e){} try{ window.scrollTo(0,0); }catch(e){} }
+let cycleFor=-1;
+function render(){
+  clearTimers(); select(null); app.innerHTML='';
+  const page=(location.hash||'').slice(1);
+  if(PAGES.some(p=>p.id===page)){ app.append(...pageView(page),footer()); toTop(); return; }
+  if(!S){ app.append(...titleScreen(),footer()); toTop(); return; }
+  if(S.screen==='char'){ app.append(...charScreen()); }
+  else if(S.screen==='idea'){ app.append(hud(),...ideaScreen()); }
+  else if(S.screen==='map'){ app.append(hud(),...mapScreen()); }
+  else if(S.screen==='stage'){
+    if(cycleFor!==S.stage){ app.append(hud(),cycleView()); sfx('whoosh'); later(()=>{ cycleFor=S.stage; render(); },2700); }
+    else app.append(hud(),...[].concat(STG[S.stage].fn()));
+  }
+  else if(S.screen==='result'){ app.append(hud(),...resultScreen()); }
+  else if(S.screen==='report'){ app.append(hud(),...reportScreen()); }
+  app.append(footer());
+  toTop();
+}
+window.addEventListener('hashchange',()=>render());
+
+/* ---------- production cycle transition ---------- */
+const CYCLE=['Idea','Plan','Build','Test','Launch','Learn'];
+const PHASE_OF={napkin:0,bmc:0,pitch:0,pm:1,po:1,pa:1,ux:1,dev:2,qa:3,uat:3,live:4,beta:4};
+function cycleView(){
+  const st=STG[S.stage], idx=PHASE_OF[st.id], prev=S.stage>0?PHASE_OF[STG[S.stage-1].id]:0;
+  const from=prev*60, to=idx===prev?prev*60+360:idx*60;
+  let svg=`<svg viewBox="0 0 250 250" role="img" aria-label="Product cycle, now in the ${CYCLE[idx]} phase"><circle class="ring" cx="125" cy="125" r="95"/>`;
+  CYCLE.forEach((c,i)=>{ const a=(i*60-90)*Math.PI/180, x=125+95*Math.cos(a), y=125+95*Math.sin(a); svg+=`<g class="nd ${i<idx?'done':i===idx?'on':''}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="20"/><text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}">${c}</text></g>`; });
+  svg+=`<g class="runner" style="--from:${from}deg;--to:${to}deg"><circle cx="125" cy="30" r="7" fill="#0F1A12"/></g><text class="center" x="125" y="120">Production</text><text class="center" x="125" y="140">cycle</text></svg>`;
+  return h('section',{class:'sheet'},h('div',{class:'cycle'},h('div',{class:'ringbox',html:svg}),
+    h('div',{class:'cycle-text'},npcAv(st.npc),h('span',{class:'phase-tag'},`${CYCLE[idx]} phase`),h('h2',{},STG_TITLE[st.id]),h('p',{class:'real'},`Step ${S.stage+1} of ${STG.length} · ${st.role} · ${st.who}`),
+      h('div',{class:'cycle-bar'},h('i')),
+      h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>{ cycleFor=S.stage; render(); }},'Start now')))));
+}
+
+/* ---------- footer + info pages ---------- */
+const PAGES=[{id:'about',label:'About'},{id:'team',label:'Team'},{id:'privacy',label:'Privacy'},{id:'terms',label:'Terms'}];
+function footer(){
+  const snd=h('button',{class:'snd','aria-pressed':String(SOUND),onclick:()=>{ SOUND=!SOUND; try{ localStorage.setItem('initiate.sound',SOUND?'on':'off'); }catch(e){} snd.textContent=SOUND?'Sound on':'Sound off'; snd.setAttribute('aria-pressed',String(SOUND)); if(SOUND) sfx('good'); }},SOUND?'Sound on':'Sound off');
+  return h('footer',{class:'foot'},h('nav',{'aria-label':'About INITIATE'},PAGES.map(p=>h('a',{href:'#'+p.id},p.label))),snd);
+}
+function pageView(id){
+  const back=h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>{ history.replaceState(null,'',location.pathname+location.search); render(); }},'Back to the game'));
+  const D=(role,title,...kids)=>[h('section',{class:'sheet'},h('div',{class:'role'},role),h('h2',{},title),h('div',{class:'doc'},...kids),back)];
+  if(id==='about') return D('About','About INITIATE',
+    h('p',{},'INITIATE is a game about the whole journey of a product: from a scattered idea in your head to something real customers use and pay for.'),
+    h('p',{},'You sketch the idea on a napkin, map it on a Business Model Canvas and pitch it to management. Then you work through every role in a product team: project manager, product owner, product analyst, UI/UX designer, developers with DevOps, QA, user acceptance testing and finally real users. Every choice carries forward, so a vague napkin or skipped tests come back to bite you later.'),
+    h('h3',{},'Who it is for'),
+    h('ul',{},h('li',{},'Students and fresh graduates who want to see how products are really built.'),h('li',{},'New product managers, analysts, designers, developers and testers who want to understand the roles around them.'),h('li',{},'Founders and small business owners turning an idea into a plan.'),h('li',{},'Teams using it for onboarding or a fun workshop.')),
+    h('h3',{},'About the creator'),
+    h('p',{},'INITIATE is created by Yusri. It started from one question: how does a scattered idea, like selling a product or opening a business, become a product with real impact? The game lets you feel every step of that journey instead of reading about it.'),
+    h('p',{class:'real'},'Version 4 · November 2026'));
+  if(id==='team') return D('Team','The team behind your product',
+    h('p',{},'These are the people you work with in the game. They are fictional characters, each standing for a real role in a product team.'),
+    h('div',{class:'team-grid'},[
+      ['aisha','Aisha · CEO','Sets the vision and decides which ideas get funded.'],['daniel','Daniel · CFO','Asks about money: cost, revenue and when you break even.'],['mei','Mei · COO','Asks about risk and operations, and leads UAT.'],
+      ['raj','Raj · Project manager','Plans the team, budget, timeline and sprints.'],['sofia','Sofia · Product owner','Owns the backlog and protects the sprint goal.'],['hafiz','Hafiz · Product analyst','Turns needs into testable acceptance criteria.'],
+      ['lina','Lina · UI/UX designer','Designs the screens and tests them with people.'],['ken','Ken · Developer','Builds the stories, sprint by sprint.'],['tom','Tom · QA engineer','Hunts bugs before customers find them.'],['priya','Priya · DevOps engineer','Keeps the pipeline and servers healthy.'],['nadia','Nadia · Customer support','Answers customers on launch day.'],
+    ].map(([k,n,d])=>h('div',{class:'tcard'},av(NPC[k]),h('div',{},h('b',{},n),h('small',{},d))))),
+    h('h3',{},'Made by'),
+    h('div',{class:'tcard',style:'max-width:360px'},av({g:'m',hw:'songkok',style:'traditional',color:'#262828',skin:'#c68a5e'}),h('div',{},h('b',{},'Yusri'),h('small',{},'Creator of INITIATE: game idea and design direction.'))));
+  if(id==='privacy') return D('Privacy','Privacy',
+    h('p',{},'Short version: the game does not collect your personal data. Everything stays on your device unless you choose to share it.'),
+    h('h3',{},'What the game collects'),h('p',{},'Nothing. There is no sign-up, no tracking and no analytics inside the game.'),
+    h('h3',{},'Where your progress is saved'),h('p',{},'Your name, character look, scores and badges are saved in this browser\'s local storage so you can continue later. They stay on this device and are never sent anywhere by the game.'),
+    h('div',{class:'actions'},h('button',{class:'btn sec small',onclick:e=>{ clearSave(); S=null; e.currentTarget.textContent='Progress cleared'; e.currentTarget.disabled=true; }},'Clear my saved progress')),
+    h('h3',{},'Saving and sharing your scorecard'),h('p',{},'The scorecard image is drawn on your device. When you save it, the Claude app asks you to confirm first. The share buttons open LinkedIn, X, WhatsApp or Threads with text filled in; what happens there is covered by that platform\'s own privacy policy.'),
+    h('h3',{},'Hosting'),h('p',{},'The game is served as a static web page (GitHub Pages or claude.ai). The host\'s own privacy policy covers how the page itself is delivered. Your progress stays in your own browser.'),
+    h('p',{class:'real'},'Last updated 7 November 2026'));
+  return D('Terms','Terms and conditions',
+    h('h3',{},'A learning game'),h('p',{},'INITIATE is an educational simulation. It shows how product teams usually work, but real projects vary.'),
+    h('h3',{},'Fictional content'),h('p',{},'All businesses, people, budgets, prices and results in the game are made up. Any resemblance to a real company or person is a coincidence. No real brands are used.'),
+    h('h3',{},'Not professional advice'),h('p',{},'Nothing in the game is business, financial, legal or investment advice. Do your own research before you spend real money on an idea.'),
+    h('h3',{},'Your scorecard'),h('p',{},'Your scorecard is yours. Share it wherever you like. Please keep posts about the game kind and honest.'),
+    h('h3',{},'As is'),h('p',{},'The game is provided as is, without any warranty. It may change or be updated at any time.'),
+    h('p',{class:'real'},'Last updated 7 November 2026'));
+}
+function go(screen){ S.screen=screen; save(); render(); }
+
+function intro(title,text,how,real){
+  const st=STG[S.stage];
+  return h('section',{class:'intro'},npcAv(st.npc,'bob'),
+    h('div',{class:'sheet'},h('div',{class:'role'},`Step ${S.stage+1} of ${STG.length} · ${st.role} · ${st.who}`),h('h2',{},title),h('p',{},text),
+      how?h('div',{class:'how'},h('b',{},'How to play'),h('span',{},how)):null,
+      real?h('p',{class:'real'},h('b',{},'In real life: '),real):null));
+}
+const sheet=(...kids)=>h('section',{class:'sheet'},...kids);
+
+/* ---------- finish a stage: inline result card ---------- */
+function finish(score,lines){
+  score=Math.round(clamp(score,0,100));
+  const st=STG[S.stage]; S.scores[st.id]=score;
+  const gained=50+(score>=60?50:0)+Math.round(score*.3);
+  const before=S.level; addXP(gained);
+  const earned=checkBadges(st.id).filter(b=>!S.badges.includes(b)); S.badges.push(...earned);
+  S.lastResult={id:st.id,score,lines,gained,levelUp:S.level>before?S.level:0,badges:earned};
+  S.stage++; S.screen='result'; save(); render();
+}
+function checkBadges(id){
+  const out=[], F=S.flags;
+  if(id==='napkin'&&S.napkinStrong===4) out.push('sharp_napkin');
+  if(id==='bmc'&&S.bmcMistakes===0) out.push('canvas_pro');
+  if(id==='pitch'&&F.pitchTries===0) out.push('first_pitch');
+  if(id==='pm'&&S.scores.pm>=100) out.push('lean_team');
+  if(id==='po'&&F.mvp) out.push('mvp_mindset');
+  if(id==='pa'&&S.scores.pa>=100) out.push('testable');
+  if(id==='ux'&&F.cleanScreen) out.push('clean_screen');
+  if(id==='dev'&&!F.skippedTests) out.push('no_shortcuts');
+  if(id==='qa'&&F.allBugs) out.push('bug_hunter');
+  if(id==='uat'&&F.scopeGuard) out.push('scope_guardian');
+  if(id==='live'&&F.firefighter) out.push('firefighter');
+  if(id==='beta'&&S.launch&&+S.launch.rating>=4.5) out.push('customer_love');
+  return out;
+}
+function resultScreen(){
+  const R=S.lastResult, st=STG.find(s=>s.id===R.id), n=Math.round(R.score/20);
+  const nextSt=STG[S.stage];
+  later(()=>{ const sh=$('.res-sheet'); if(!sh) return; countUp($('.res-num'),R.score,900); sfx(R.score>=60?'win':'tick'); if(R.score>=60) confetti(sh); },120);
+  return [h('section',{class:'sheet res-sheet'},
+    h('div',{class:'role'},`${st.role} · ${STG_TITLE[st.id]} complete`),
+    h('div',{class:'score-big'},h('div',{class:'score-num'},h('span',{class:'res-num'},'0'),h('small',{},' / 100')),h('div',{class:'studs','aria-label':`${n} of 5`},[0,1,2,3,4].map(i=>h('i',{class:i<n?'on':''})))),
+    h('div',{class:'popup',style:'animation-delay:.5s'},`+${R.gained} XP`),
+    R.levelUp?h('div',{class:'levelup pop-in',style:'animation-delay:.8s'},`Level up! You are now level ${R.levelUp}`):null,
+    R.badges.length?h('div',{style:'display:grid;gap:6px'},h('div',{class:'label'},'New badge'),h('div',{class:'badges'},R.badges.map(id=>{const b=BADGES.find(x=>x.id===id);return h('span',{class:'badge',style:`--c:${b.c}`,title:b.how},`${b.name}: ${b.how}`);}))):null,
+    h('ul',{class:'lines'},R.lines.map(l=>h('li',{},l))),
+    h('div',{class:'actions'},
+      nextSt?h('button',{class:'btn',onclick:()=>{S.screen='stage';save();render();}},`Next: ${STG_TITLE[nextSt.id]}`):h('button',{class:'btn',onclick:()=>go('report')},'See my report card'),
+      h('button',{class:'btn sec',onclick:()=>go('map')},'Journey map')))];
+}
+
+/* ================= title ================= */
+function titleScreen(){
+  const COLS=['var(--tomato)','var(--mustard)','var(--cobalt)','var(--leaf)','var(--pink)','var(--lilac)','var(--teal)','var(--tomato)'];
+  const saved=loadSaved();
+  return [h('section',{class:'hero'},
+    h('div',{class:'hero-text'},
+      h('div',{class:'logo-row','aria-label':'INITIATE'},[...'INITIATE'].map((c,i)=>h('span',{class:i===1?'dark':'',style:`--c:${COLS[i]};--i:${i};--r:${i%2?4:-4}deg`,'aria-hidden':'true'},c))),
+      h('div',{class:'tchips'},[['12','stages'],['7','projects'],['1','live launch']].map(([a,b],i)=>h('div',{class:'tchip',style:`--i:${i}`},h('b',{},a),h('span',{},b)))),
+      h('h1',{class:'display'},'Turn a scattered idea into ',h('em',{},'real impact',h('span',{html:'<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 14 C 60 4, 120 18, 180 9 S 270 6, 296 12"/></svg>'})),'.'),
+      h('p',{class:'lead'},'Sketch it on a napkin, map it on a Business Model Canvas and pitch it live to the board. Then build it with a real product team, Scrum sprints and DevOps, and launch it to real customers.'),
+      h('div',{class:'actions'},
+        saved&&saved.player?h('button',{class:'btn',onclick:()=>{S=saved;prevNums=null;render();}},`Continue ${saved.player.name}'s journey`):null,
+        h('button',{class:saved&&saved.player?'btn sec':'btn',onclick:()=>{clearSave();S={screen:'char'};render();}},saved&&saved.player?'Start a new journey':'Start your journey'))),
+    h('div',{class:'fan','aria-hidden':'true'},
+      h('div',{class:'card c1'},h('span',{class:'k'},'Idea Napkin'),h('span',{class:'hand'},'Breakfast in 60 seconds, no queue'),h('span',{class:'hand',style:'color:var(--tomato);font-size:20px'},'for office workers')),
+      h('div',{class:'card c2'},h('span',{class:'k'},'Business Model Canvas'),h('div',{class:'mini-bmc'},Array.from({length:10},()=>h('i')))),
+      h('div',{class:'card c3'},h('span',{class:'k'},'Report card'),h('span',{class:'grade'},'A'),h('span',{style:'font-weight:600'},'Champion'),h('span',{class:'stars'},'★★★★★')))),
+    h('div',{class:'phase-strip'},[['Idea','Napkin, canvas, live pitch','var(--mustard)',1],['Plan','PM, PO, analyst, UX','var(--sky)',0],['Build','Sprints, CI/CD, QA','var(--leaf)',0],['Launch','UAT, live ops, users','var(--pink)',1]].map(([a,b,c,l])=>h('div',{class:'scrap phase'+(l?' light':''),style:`--c:${c};${rot()}`},h('b',{},a),b)))];
+}
+
+/* ================= character select ================= */
+function charScreen(){
+  let g=null, P={};
+  const DEF={m:{name:'Aiman',trait:'Calm under pressure'},f:{name:'Aisyah',trait:'Sharp on the read'}};
+  const base=gg=>({g:gg,skin:SKINS[2],hw:'none',style:'casual',color:COLORS[0],hair:HAIRS[0],tcolor:'#e7a3b8',name:DEF[gg].name});
+  const tiles={};
+  const custom=h('div',{});
+  const pickTiles=h('div',{class:'pick2'},['m','f'].map(gg=>{ tiles[gg]=h('button',{class:'ptile','aria-pressed':'false',onclick:()=>choose(gg)},av(base(gg)),h('b',{},DEF[gg].name),h('small',{},DEF[gg].trait)); return tiles[gg]; }));
+  function choose(gg){ g=gg; P=base(gg); Object.entries(tiles).forEach(([k,t])=>t.setAttribute('aria-pressed',k===gg)); drawCustom(); }
+  function drawCustom(){
+    const preview=h('div',{class:'preview'},av(P,'bob'));
+    const swatch=(list,key)=>h('div',{class:'swatches'},list.map(c=>h('button',{class:'sw',style:`--c:${c}`,'aria-label':`Colour ${c}`,'aria-pressed':String(P[key]===c),onclick:()=>{P[key]=c;drawCustom();}})));
+    const pills=(list,key)=>h('div',{class:'swatches'},list.map(([v,l])=>h('button',{class:'pill','aria-pressed':String(P[key]===v),onclick:()=>{P[key]=v;drawCustom();}},l)));
+    const name=h('input',{id:'pname',value:P.name,maxlength:'16','aria-label':'Player name',oninput:e=>{P.name=e.target.value;}});
+    custom.replaceChildren(sheet(h('h3',{},'Make it yours'),h('p',{class:'real'},'Optional. Your look is just for fun and never changes your score.'),
+      h('div',{class:'custom'},preview,h('div',{style:'display:grid;gap:14px'},
+        h('div',{class:'field'},h('label',{class:'label',for:'pname'},'Your name'),name),
+        h('div',{class:'opt-row'},h('div',{class:'label'},'Skin tone'),swatch(SKINS,'skin')),
+        h('div',{class:'opt-row'},h('div',{class:'label'},'Headwear'),pills(HEADWEAR[g],'hw')),
+        P.hw==='none'?h('div',{class:'opt-row'},h('div',{class:'label'},'Hair'),swatch(HAIRS,'hair')):null,
+        P.hw==='tudung'?h('div',{class:'opt-row'},h('div',{class:'label'},'Tudung colour'),swatch(['#e7a3b8','#9fc4e8','#f2b632','#2b3446','#f8f8f3','#45a865'],'tcolor')):null,
+        h('div',{class:'opt-row'},h('div',{class:'label'},'Outfit'),pills(STYLES[g],'style')),
+        h('div',{class:'opt-row'},h('div',{class:'label'},'Outfit colour'),swatch(COLORS,'color')))),
+      h('div',{class:'actions'},h('button',{class:'btn',onclick:confirm},'Start my journey'))));
+  }
+  function confirm(){
+    const nm=(P.name||'').trim();
+    if(nm.length<2){ $('#pname').focus(); $('#pname').style.borderColor='var(--bad)'; return; }
+    P.name=nm.slice(0,16); S=newState(P); prevNums=null; save(); render();
+  }
+  return [sheet(h('div',{class:'role'},'Choose your player'),h('h2',{},'Who is starting this journey?'),h('p',{},'Pick a character. Both start with exactly the same stats.'),pickTiles),custom];
+}
+
+/* ================= idea pick ================= */
+function ideaScreen(){
+  return [sheet(h('div',{class:'role'},`Hi ${S.player.name}`),h('h2',{},'What do you want to initiate?'),h('p',{},'Pick a starting idea. You will make it your own on the napkin next.'),
+    h('div',{class:'ideas'},IDEAS.map(i=>h('button',{class:'scrap idea',style:`--c:${i.color};${rot()}`,onclick:()=>{S.ideaId=i.id;S.oneLiner=i.pitch;S.screen='map';save();render();}},
+      h('span',{class:'k'},i.kind),h('span',{class:'n'},i.name),h('span',{class:'d'},i.pitch)))))];
+}
+
+/* ================= journey map ================= */
+function mapScreen(){
+  const allDone=S.stage>=STG.length;
+  const nodes=[]; let lastPhase=null;
+  STG.forEach((st,i)=>{
+    if(st.phase!==lastPhase){ nodes.push(h('div',{class:'ph-h'},st.phase)); lastPhase=st.phase; }
+    const state=i<S.stage?'done':i===S.stage?'next':'locked'; const sc=S.scores[st.id];
+    nodes.push(h('div',{class:'node '+state},h('div',{class:'dot'},state==='done'?'✓':i+1),
+      h('div',{class:'meta'},h('b',{},STG_TITLE[st.id]),h('small',{},`${st.role} · ${st.who}`)),
+      state==='done'?h('span',{class:'stars','aria-label':`${sc} points`},'★'.repeat(Math.round(sc/20))+'☆'.repeat(5-Math.round(sc/20))):null,
+      state==='next'?h('button',{class:'btn small',onclick:()=>go('stage')},'Play'):null));
+  });
+  nodes.push(h('div',{class:'ph-h'},'Impact'));
+  nodes.push(h('div',{class:'node '+(allDone?'next':'locked')},h('div',{class:'dot'},'★'),h('div',{class:'meta'},h('b',{},'Report card'),h('small',{},'Your shareable snapshot')),allDone?h('button',{class:'btn small',onclick:()=>go('report')},'Open'):null));
+  return [
+    sheet(h('div',{class:'role'},'Your product lifecycle'),h('h2',{},allDone?`${I().name} has launched!`:`${I().name}: from napkin to launch`),
+      h('p',{},allDone?'Open your report card to see the impact and share it.':`Next up: ${STG_TITLE[STG[S.stage].id]}. Each step is a short game that takes a few minutes.`),
+      allDone?h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>go('report')},'Open my report card')):h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>go('stage')},`Play: ${STG_TITLE[STG[S.stage].id]}`))),
+    h('section',{class:'sheet tape'},h('div',{class:'map'},nodes)),
+    sheet(h('h3',{},`Badges (${S.badges.length} of ${BADGES.length})`),h('div',{class:'badges'},BADGES.map(b=>h('span',{class:'badge'+(S.badges.includes(b.id)?'':' off'),style:`--c:${b.c}`,title:b.how},b.name))),
+      h('div',{class:'actions'},h('button',{class:'btn sec small',onclick:()=>{ S=null; render(); }},'Back to start'))),
+  ];
+}
+
+/* ================= 1. Idea Napkin ================= */
+function stNapkin(){
+  const idea=I(); const LABEL=Object.fromEntries(NAPKIN_LINES);
+  const filled={}; let mistakes=0;
+  const say=sayBox('Drag a paper scrap onto the napkin line it belongs to. Or tap a scrap, then tap the line.');
+  const tray=h('div',{class:'tray'});
+  const COLS=['var(--sky)','var(--tomato)','var(--leaf)','var(--lilac)','var(--teal)','var(--cobalt)','var(--pink)','var(--kraft)'];
+  const pieces=shuffle(Object.entries(idea.napkin).flatMap(([cat,arr])=>arr.map((t,k)=>({cat,t,strong:k===0}))));
+  const lines={};
+  const oneLiner=h('input',{id:'oneliner',value:S.oneLiner,maxlength:'110','aria-label':'Your idea in one line',oninput:e=>{S.oneLiner=e.target.value;}});
+  const napkin=h('div',{class:'napkin'},h('div',{class:'hand'},idea.name),oneLiner,
+    NAPKIN_LINES.map(([cat,label])=>{ const v=h('span',{class:'v'},'Drop a scrap here'); const el=h('button',{class:'nline'},h('span',{class:'k'},label),v); el.v=v; lines[cat]=el;
+      dropTarget(el,()=>{ if(filled[cat]){ tray.append(filled[cat].el); filled[cat].el.hidden=false; filled[cat]=null; el.classList.remove('full'); v.textContent='Drop a scrap here'; upd(); } });
+      return el; }));
+  pieces.forEach((p,i)=>{
+    p.el=h('div',{class:'scrap'+(COLS[i]==='var(--kraft)'?' light':''),style:`--c:${COLS[i]};${rot()}`},p.t);
+    draggable(p.el,{onPick:()=>say.set('Now tap the napkin line where this scrap belongs.'),onDrop:t=>place(p,t)});
+    tray.append(p.el);
+  });
+  function place(p,t){
+    const cat=Object.keys(lines).find(k=>lines[k]===t); if(!cat) return;
+    if(p.cat!==cat){ mistakes++; bounce(p.el); say.set(`Not quite. That scrap is about "${LABEL[p.cat]}", not "${LABEL[cat]}".`,'bad'); return; }
+    if(filled[cat]){ tray.append(filled[cat].el); filled[cat].el.hidden=false; }
+    filled[cat]=p; p.el.hidden=true; t.classList.add('full'); t.v.textContent=p.t; snap(t);
+    say.set(p.strong?'Nice. That line is specific.':'It fits, but it is vague. Is there a sharper scrap?',p.strong?'good':'');
+    upd();
+  }
+  const btn=h('button',{class:'btn',disabled:true,onclick:done},'My napkin is ready');
+  function upd(){ btn.disabled=NAPKIN_LINES.some(([c])=>!filled[c]); }
+  function done(){
+    const strong=Object.values(filled).filter(p=>p.strong).length; S.napkinStrong=strong; S.napkinPicks=Object.fromEntries(Object.entries(filled).map(([c,p])=>[c,p.t])); S.weeks+=1;
+    if(!S.oneLiner.trim()) S.oneLiner=idea.pitch;
+    const lines2=NAPKIN_LINES.map(([c,l])=>filled[c].strong?`${l}: specific.`:`${l}: too vague. Sharper: "${idea.napkin[c][0]}".`);
+    if(mistakes) lines2.push(`${mistakes} scrap${mistakes>1?'s':''} went to the wrong line first.`);
+    finish(strong*25-mistakes*4,lines2);
+  }
+  return [intro('Sketch your Idea Napkin',`Every big business starts as a scribble on a napkin. Write your idea in one line, then fill the four napkin lines. Each line has a sharp scrap and a vague one.`,'Drag a scrap onto a napkin line, or tap the scrap and then tap the line. Tap a filled line to take its scrap back.','Founders test whether an idea is clear enough to explain on a napkin before writing any plan.'),
+    sheet(h('div',{class:'nap-wrap'},h('div',{style:'display:grid;gap:8px;align-content:start;min-width:0'},h('h3',{},'Paper scraps'),tray),napkin),say,h('div',{class:'actions'},btn))];
+}
+
+/* ================= 2. Business Model Canvas ================= */
+function stBMC(){
+  const idea=I(); const deckCards=shuffle(BMC_BLOCKS.map(([id])=>({id,t:idea.bmc[id]})));
+  const COLS=['var(--mustard)','var(--pink)','var(--sky)','#a8d8a0','#f7c59f','#c7b8ee'];
+  let idx=0, mistakes=0, firstTry=true;
+  const say=sayBox('Drag the card into the matching canvas block, or just tap the block.');
+  const deck=h('div',{class:'deck'});
+  const blocks={};
+  const grid=h('div',{class:'bmc'},BMC_BLOCKS.map(([id,name,q])=>{ const el=h('button',{class:'blk',style:`grid-area:${id}`},h('b',{},name),h('small',{},q)); blocks[id]=el; dropTarget(el,()=>{ if(idx<deckCards.length) place(el); }); return el; }));
+  function drawDeck(){
+    deck.replaceChildren();
+    if(idx>=deckCards.length){ deck.append(h('h3',{},'Canvas complete. Every block is filled.')); btn.disabled=false; say.set(`All 9 blocks filled with ${mistakes} mistake${mistakes===1?'':'s'}.`,'good'); return; }
+    const c=deckCards[idx];
+    const card=h('div',{class:'scrap light',style:`--c:${COLS[idx%COLS.length]};${rot()}`},c.t);
+    draggable(card,{onDrop:t=>place(t)});
+    deck.append(h('div',{class:'left'},`Card ${idx+1} of 9`),card);
+    snap(card);
+  }
+  function place(t){
+    const c=deckCards[idx]; const id=Object.keys(blocks).find(k=>blocks[k]===t); if(!id) return;
+    if(blocks[id].classList.contains('full')){ say.set('That block is already filled. Try another one.','bad'); return; }
+    if(id!==c.id){ mistakes++; bounce(deck.lastChild); const b=BMC_BLOCKS.find(x=>x[0]===c.id); say.set(`Not that one. Hint: this card answers "${b[2]}"`,'bad'); return; }
+    t.classList.add('full'); t.append(h('span',{class:'placed',style:`--c:${COLS[idx%COLS.length]}`},c.t)); snap(t);
+    say.set(`Yes, that is a ${BMC_BLOCKS.find(x=>x[0]===id)[1].toLowerCase()} card.`,'good');
+    idx++; drawDeck();
+  }
+  const btn=h('button',{class:'btn',disabled:true,onclick:()=>{ S.bmcMistakes=mistakes; S.weeks+=1;
+    finish(100-mistakes*8,[`All 9 blocks of the Business Model Canvas are filled.`,mistakes?`${mistakes} card${mistakes>1?'s':''} went to the wrong block first.`:'Every card went to the right block first time.',`Your value proposition: "${idea.bmc.vp}".`,`Revenue: "${idea.bmc.rs}".`]); }},'Take the canvas to the pitch');
+  drawDeck();
+  return [intro('Map it on a Business Model Canvas','The napkin says what the idea is. The canvas shows how the business works: who you serve, why they choose you, how you reach them, and how money flows.','One card at a time: drag it into the right block, or tap the block. A wrong block shows a hint.','Teams use the 9-block Business Model Canvas to agree on the business before asking for funding.'),
+    sheet(deck,say),sheet(h('h3',{},`${idea.name} · Business Model Canvas`),h('div',{style:'overflow-x:auto'},grid),h('div',{class:'actions'},btn))];
+}
+
+/* ================= 3. Pitch (live simulation) ================= */
+function stPitch(){
+  const idea=I(), N=idea.napkin, picks=S.napkinPicks||{};
+  const BOARD=[['aisha','Aisha','CEO'],['daniel','Daniel','CFO'],['mei','Mei','COO']];
+  const SLIDES=[
+    {k:'The idea',t:idea.name,b:S.oneLiner||idea.pitch,opts:[['Open with a one-line hook about the customer',2],['Introduce yourself and your CV for two minutes',0],['Jump straight to how much money you need',1]]},
+    {k:'The problem',t:'The problem',b:picks.problem||N.problem[0],weak:picks.problem&&picks.problem!==N.problem[0],opts:[["Tell a real customer's story",2],['Read the slide word for word',0],['Show a giant market-size number',1]]},
+    {k:'Our solution',t:'Our solution',b:picks.solution||N.solution[0],weak:picks.solution&&picks.solution!==N.solution[0],opts:[['Demo the flow in three steps',2],['List every feature you can think of',0],['Say it is "like a famous app"',1]]},
+    {k:'Business model',t:'How we make money',b:`${idea.bmc.cs}. ${idea.bmc.rs}.`,opts:[['Walk through revenue and costs from your canvas',2],['Say profit will come later',0],['Show a hockey-stick growth chart',1]]},
+    {k:'The ask',t:'What we need',b:'RM 90k for a 10-week first release, then a launch to 500 real customers.',opts:[['Ask for RM 90k with clear milestones',2],['Ask for "as much as possible"',0],['Ask for RM 250k just in case',1]]},
+  ];
+  const Q=[
+    {who:0,q:`In one sentence: what problem does ${idea.name} solve, and for whom?`,a:[[`${N.problem[0]}. We fix that for ${lc(N.who[0])}.`,2],[`It is a fun idea and I am personally passionate about ${idea.product}.`,1],[`Everyone needs it. It is like a super app, but for ${idea.product}.`,0]]},
+    {who:1,q:'How much money do you need, and how do we get it back?',a:[[`About RM 90k for a 10-week first release. Revenue comes from ${lc(idea.bmc.rs)}.`,2],['Around RM 250k. Profit will come once we are big.',1],['I have not worked out the numbers yet.',0]]},
+    {who:2,q:"What happens if customers don't want it?",a:[[`We launch a small first version, test it with real ${idea.customer}, and only scale what the numbers prove.`,2],['We will spend more on marketing until they do.',1],["That won't happen. They will love it.",0]]},
+  ];
+  const LINES={2:['Nods and takes notes.','"Clear. I like that."','"Now that is a real problem."','"Good. Keep going."','Leans forward.'],1:['"Hmm. Go on."','"A bit vague."','Checks their phone.','"Okay..."'],0:['Frowns.','"That worries me."','"I am not convinced."','Crosses arms.']};
+  const base=S.napkinStrong*4+Math.max(0,8-S.bmcMistakes*2);
+  let approval=base, si=0, qi=0, tries=0, good=0, t0=0;
+  const kick=h('div',{class:'kicker'}), title=h('h3',{}), body=h('p',{}), snum=h('span',{class:'snum'});
+  const screen=h('div',{class:'screen'},kick,title,body,snum);
+  const presenter=h('div',{class:'presenter'},playerAv(),S.player.name);
+  const seats=BOARD.map(([k,n,t])=>h('div',{class:'bm'},av(NPC[k]),`${n} · ${t}`));
+  const room=h('section',{class:'room'},h('div',{class:'room-top'},h('span',{class:'live'},'Live pitch'),h('span',{},'Boardroom · Level 12')),screen,h('div',{class:'stage-row'},presenter,h('div',{class:'boardrow'},seats)));
+  const ctrl=h('section',{class:'sheet'});
+  const fillEl=h('i'), val=h('b');
+  const meter=h('div',{style:'display:grid;gap:4px'},h('div',{class:'meter-l'},h('span',{},'Board approval'),val),h('div',{class:'meter',role:'progressbar','aria-label':'Board approval'},fillEl,h('em',{style:'left:60%'})),h('p',{class:'real'},'60% gets you funded. Your napkin and canvas gave you a head start.'));
+  const setM=()=>{ const v=clamp(approval,0,100); fillEl.style.width=v+'%'; fillEl.style.background=v>=60?'var(--accent)':'var(--mustard)'; val.textContent=Math.round(v)+'%'; };
+  const say=sayBox('');
+  function bubbles(g,extra){
+    seats.forEach(s=>{ s.querySelector('.bub')?.remove(); s.classList.remove('lean'); });
+    const who=shuffle([0,1,2]).slice(0,g===1?1:2);
+    who.forEach((i,j)=>later(()=>{ const txt=extra&&j===0?extra:pick(LINES[g]); seats[i].append(h('div',{class:'bub '+(g===2?'g':g===0?'b':'')},txt)); if(g===2) seats[i].classList.add('lean'); },j*350));
+  }
+  function clearBubbles(){ seats.forEach(s=>{ s.querySelector('.bub')?.remove(); s.classList.remove('lean'); }); }
+  function typeOut(el,text){ el.textContent=''; let i=0; const step=()=>{ el.textContent=text.slice(0,i+=2); if(i<text.length) later(step,16); }; step(); }
+  function showSlide(){
+    const sl=SLIDES[si]; clearBubbles(); presenter.classList.add('talk');
+    screen.classList.remove('flip'); void screen.offsetWidth; screen.classList.add('flip'); sfx('whoosh');
+    kick.textContent=sl.k; title.textContent=sl.t; typeOut(body,sl.b); snum.textContent=`Slide ${si+1} / ${SLIDES.length}`;
+    ctrl.replaceChildren(h('span',{class:'phase-tag'},'Part 1 · Present'),h('h3',{},'How do you present this slide?'),
+      h('div',{class:'choices'},shuffle(sl.opts).map(([t,g])=>h('button',{class:'scrap choice',style:'--c:var(--cobalt)',onclick:e=>slideAnswer(g,e.currentTarget)},t))),say,meter);
+    say.set(''); setM();
+  }
+  function slideAnswer(g,btn){
+    const sl=SLIDES[si];
+    ctrl.querySelectorAll('.choice').forEach(b=>b.disabled=true); btn.disabled=false; btn.style.setProperty('--c',g===2?'var(--leaf)':g===1?'var(--mustard)':'var(--tomato)');
+    approval+=[-3,2,6][g]; if(sl.weak) approval-=2; setM();
+    bubbles(sl.weak&&g!==0?1:g,sl.weak?'"That sounds a bit vague."':null);
+    say.set(g===2?'The room is with you.':g===1?'It lands, but only just.':'You are losing the room.',g===2?'good':g===0?'bad':'');
+    later(()=>{ si++; if(si<SLIDES.length) showSlide(); else startQA(); },1700);
+  }
+  function startQA(){
+    presenter.classList.remove('talk'); clearBubbles();
+    kick.textContent='Questions'; title.textContent='Q&A with the board'; body.textContent='Three questions. Answer quickly for a confidence bonus.'; snum.textContent='';
+    later(ask,1200);
+  }
+  function ask(){
+    const q=Q[qi]; clearBubbles(); seats.forEach((s,i)=>s.classList.toggle('lean',i===q.who));
+    seats[q.who].append(h('div',{class:'bub'},'Question!'));
+    screen.classList.remove('flip'); void screen.offsetWidth; screen.classList.add('flip'); sfx('tick');
+    kick.textContent=`Question ${qi+1} of 3 · ${BOARD[q.who][1]}, ${BOARD[q.who][2]}`; title.textContent=''; typeOut(body,q.q);
+    t0=performance.now();
+    ctrl.replaceChildren(h('span',{class:'phase-tag'},'Part 2 · Q&A'),
+      h('div',{class:'clock'},h('span',{html:'<svg viewBox="0 0 34 34" aria-hidden="true"><circle class="tr" cx="17" cy="17" r="14"/><circle class="fg" cx="17" cy="17" r="14"/></svg>'}),'Answer within 8 seconds for a bonus. No penalty after that.'),
+      h('div',{class:'choices'},shuffle(q.a).map(([t,g])=>h('button',{class:'scrap choice',style:'--c:var(--cobalt)',onclick:e=>qaAnswer(g,e.currentTarget)},t))),say,meter);
+    say.set(''); setM();
+  }
+  function qaAnswer(g,btn){
+    ctrl.querySelectorAll('.choice').forEach(b=>b.disabled=true); btn.disabled=false; btn.style.setProperty('--c',g===2?'var(--leaf)':g===1?'var(--mustard)':'var(--tomato)');
+    const fast=(performance.now()-t0)<8000&&g===2;
+    approval+=[-4,4,12][g]+(fast?3:0); if(g===2) good++; setM();
+    clearBubbles(); bubbles(g);
+    say.set(g===2?(fast?'Sharp and fast. Confidence bonus +3.':'Strong answer.'):g===1?'Hmm. That is vague.':'That worries the board.',g===2?'good':g===0?'bad':'');
+    later(()=>{ qi++; if(qi<Q.length) ask(); else deliberate(); },1700);
+  }
+  function deliberate(){
+    clearBubbles(); seats.forEach(s=>s.classList.add('lean'));
+    seats.forEach(s=>s.append(h('div',{class:'bub'},h('span',{class:'thinking'},h('i'),h('i'),h('i')))));
+    kick.textContent='The board is deciding'; title.textContent='Please wait outside...'; body.textContent='Aisha, Daniel and Mei talk it over.';
+    ctrl.replaceChildren(h('span',{class:'phase-tag'},'Part 3 · Decision'),h('p',{},'The board is deliberating.'),meter); setM();
+    later(verdict,2200);
+  }
+  function verdict(){
+    clearBubbles(); sfx('stamp');
+    if(approval>=60){
+      const budget=Math.round(70+clamp(approval,0,100)*.35); S.budget=budget; S.flags.pitchTries=tries; refreshHUD();
+      kick.textContent='Decision'; title.textContent=''; body.textContent=''; screen.append(h('div',{class:'stampwrap'},h('div',{class:'stamp'},'Idea accepted')));
+      seats.forEach(s=>s.append(h('div',{class:'bub g'},pick(['"Approved!"','"Let\'s build it."','"Welcome aboard."']))));
+      confetti(room); sfx('win');
+      ctrl.replaceChildren(h('h3',{},`The board funds ${idea.name} with RM ${budget}k.`),meter,
+        h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>finish(clamp(approval,0,100)-tries*10,[`${good} of 3 board questions answered strongly.`,`Approval: ${Math.round(clamp(approval,0,100))}%.`,`Budget granted: RM ${budget}k.`,tries?`It took ${tries+1} pitches. Each retry cost a week.`:'Funded on the first pitch.'])},'Collect the budget')));
+      setM();
+    } else {
+      kick.textContent='Decision'; title.textContent=''; body.textContent=''; screen.append(h('div',{class:'stampwrap'},h('div',{class:'stamp no'},'Not yet')));
+      ctrl.replaceChildren(h('p',{},'The board wants a clearer story, real numbers and a cheap way to test. Rework the pitch and try again. It costs one week.'),meter,
+        h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>{ tries++; S.weeks++; refreshHUD(); screen.querySelector('.stampwrap')?.remove(); approval=base; si=0; qi=0; good=0; showSlide(); }},'Pitch again')));
+      setM();
+    }
+  }
+  showSlide();
+  return [intro('Pitch live to management',`You are on stage. Present five slides to Aisha (CEO), Daniel (CFO) and Mei (COO), then take their questions. Watch their reactions and reach 60% approval.`,'For each slide, tap how you present it. Then answer three questions. The board reacts live.','A steering committee or investment board hears the pitch and decides whether to release the budget.'),room,ctrl];
+}
+
+/* ================= 4. Project manager ================= */
+function stPM(){
+  let devs=2, qa=true, devops=true, sprints=4;
+  const RATE={po:3,pa:2,ux:2,dev:4,qa:2.5,devops:3}, RESERVE=8;
+  const out=h('div',{}), warn=h('p',{class:'warn',role:'status'});
+  const commit=h('button',{class:'btn',onclick:done},'Approve the plan');
+  const calc=()=>{ const per=RATE.po+RATE.pa+RATE.ux+devs*RATE.dev+(qa?RATE.qa:0)+(devops?RATE.devops:0); const total=per*sprints; const vel=devs*5; return {per,total,vel,cap:vel*sprints,left:S.budget-total}; };
+  const row=(a,b,bad)=>h('div',{class:'row'},h('span',{},a),h('b',{class:bad?'bad':''},b));
+  const devVal=h('b',{}), spVal=h('b',{});
+  const qaBtn=h('button',{class:'scrap member',style:'--c:var(--warn)',onclick:()=>{qa=!qa;upd();}});
+  const doBtn=h('button',{class:'scrap member',style:'--c:var(--leaf)',onclick:()=>{devops=!devops;upd();}});
+  function upd(){
+    const c=calc(); devVal.textContent=devs; spVal.textContent=sprints;
+    qaBtn.setAttribute('aria-pressed',qa); qaBtn.classList.toggle('off',!qa);
+    qaBtn.replaceChildren(h('span',{},'QA engineer',h('small',{},'Finds bugs before customers do')),h('span',{class:'toggle-note'},qa?`Hired · RM ${RATE.qa}k`:'Tap to hire'));
+    doBtn.setAttribute('aria-pressed',devops); doBtn.classList.toggle('off',!devops);
+    doBtn.replaceChildren(h('span',{},'DevOps engineer',h('small',{},'CI/CD pipeline and servers')),h('span',{class:'toggle-note'},devops?`Hired · RM ${RATE.devops}k`:'Tap to hire'));
+    out.replaceChildren(row('Cost per sprint',`RM ${c.per.toFixed(1)}k`),row('Total build cost',`RM ${c.total.toFixed(1)}k`),row('Budget left after the build',`RM ${c.left.toFixed(1)}k`,c.left<RESERVE),row('Team speed',`${c.vel} points per sprint`),row('Total capacity',`${c.cap} points in ${sprints*2} weeks`));
+    commit.disabled=c.left<RESERVE;
+    warn.textContent=c.left<RESERVE?`Over budget. Keep at least RM ${RESERVE}k for UAT fixes and launch.`:'';
+  }
+  const fixed=(n,d,r,c)=>h('div',{class:'scrap member',style:`--c:${c}`},h('span',{},n,h('small',{},d)),h('span',{class:'toggle-note'},`RM ${r}k`));
+  const stepper=(label,v,dec,inc)=>h('div',{class:'row'},h('span',{},label),h('div',{class:'stepper'},h('button',{'aria-label':'Fewer',onclick:dec},'−'),v,h('button',{'aria-label':'More',onclick:inc},'+')));
+  upd();
+  function done(){
+    const c=calc(); S.team={devs,qa,devops,sprints,vel:c.vel,cap:c.cap}; S.budget=+(S.budget-c.total).toFixed(1); S.weeks+=1;
+    const score=40+(qa?20:0)+(devops?20:0)+(c.left<=25?20:8)-(c.cap<24?20:0);
+    const lines=[`${devs} developer${devs>1?'s':''}, ${sprints} sprints of 2 weeks, ${c.cap} story points of capacity.`,
+      qa?'QA hired: testing gets a bug count and fewer bugs slip through.':'No QA: developers test their own work, so more bugs slip through.',
+      devops?'DevOps hired: a reliable CI/CD pipeline and quick fixes.':'No DevOps: every broken pipeline costs an extra week.',
+      c.left>25?`RM ${c.left.toFixed(1)}k left unused. That could have bought more capacity.`:`RM ${c.left.toFixed(1)}k kept in reserve for UAT and launch.`];
+    if(c.cap<24) lines.push('Capacity is very low. Most of the backlog will not fit.');
+    finish(score,lines);
+  }
+  return [intro('Plan the team and the timeline',`${I().name} is funded with RM ${S.budget}k. Choose the team and how many 2-week sprints to run. Every sprint costs the whole team's pay.`,'Tap QA and DevOps to hire or release them. Use + and − for developers and sprints. Keep a reserve.','The project manager owns scope, time, cost and risk, and sets up the Scrum rhythm with the team.'),
+    sheet(h('h3',{},'Team (cost per sprint)'),fixed('Product owner','Owns the backlog',RATE.po,'var(--tomato)'),fixed('Product analyst','Writes requirements',RATE.pa,'var(--teal)'),fixed('UI/UX designer','Designs and tests screens',RATE.ux,'var(--lilac)'),qaBtn,doBtn,
+      stepper(`Developers (RM ${RATE.dev}k each)`,devVal,()=>{devs=Math.max(1,devs-1);upd();},()=>{devs=Math.min(4,devs+1);upd();}),
+      stepper('Sprints (2 weeks each)',spVal,()=>{sprints=Math.max(3,sprints-1);upd();},()=>{sprints=Math.min(5,sprints+1);upd();})),
+    sheet(h('h3',{},'Project plan'),out,warn,h('div',{class:'actions'},commit))];
+}
+
+/* ================= 5. Product owner ================= */
+function knap(items,cap){ const dp=new Array(cap+1).fill(0); for(const it of items) for(let c=cap;c>=it.e;c--) dp[c]=Math.max(dp[c],dp[c-it.e]+it.v); return dp[cap]; }
+function stPO(){
+  const T=S.team; const stories=STORIES.map(s=>({...s,t:storyT(s),tag:''}));
+  const fillEl=h('i'), txt=h('b'), warn=h('p',{class:'warn',role:'status'}), left=h('span',{class:'real'});
+  const commit=h('button',{class:'btn',disabled:true,onclick:done},'Commit the backlog');
+  const list=h('div',{style:'display:grid;gap:10px'},stories.map(s=>{
+    const seg=h('div',{class:'seg',role:'group','aria-label':`Priority for ${s.t}`},TAGS.map(t=>h('button',{'data-t':t,'aria-pressed':'false',onclick:()=>{ s.tag=t; seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t)); upd(); }},TAGNAME[t])));
+    return h('div',{class:'story-row'},h('div',{class:'story-top'},h('span',{},s.t),h('span',{class:'tags'},h('span',{class:'tag'},`value ${s.v}`),h('span',{class:'tag'},`${s.e} pts`))),seg);
+  }));
+  function upd(){
+    const used=stories.filter(s=>s.tag==='M'||s.tag==='S').reduce((a,s)=>a+s.e,0);
+    fillEl.style.width=clamp(used/T.cap*100,0,100)+'%'; fillEl.style.background=used>T.cap?'var(--tomato)':'var(--leaf)';
+    txt.textContent=`${used} of ${T.cap} points`;
+    warn.textContent=used>T.cap?'Must + Should is bigger than your capacity. Something will not get built.':'';
+    const n=stories.filter(s=>!s.tag).length; left.textContent=n?`${n} stor${n>1?'ies':'y'} still need a priority.`:'All stories prioritised.';
+    commit.disabled=n>0;
+  }
+  upd();
+  function done(){
+    const order=[...stories].sort((a,b)=>TAGS.indexOf(a.tag)-TAGS.indexOf(b.tag));
+    let l=T.cap, planned=0; for(const s of order){ if(s.tag!=='W'&&s.e<=l){ l-=s.e; planned+=s.v; } }
+    const best=knap(stories,T.cap);
+    const coreLow=stories.filter(s=>s.core&&(s.tag==='C'||s.tag==='W')), trapHigh=stories.filter(s=>s.trap&&(s.tag==='M'||s.tag==='S'));
+    S.flags.mvp=!coreLow.length&&!trapHigh.length;
+    S.backlog=order.map(({id,t,v,e,core,trap,tag})=>({id,t,v,e,core,trap,tag})); S.best=best; S.planned=planned; S.weeks+=1;
+    const lines=[`Planned value: ${planned} of the best possible ${best} for your capacity.`];
+    coreLow.forEach(s=>lines.push(`"${s.t}" is core to the product but was not a Must or Should.`));
+    trapHigh.forEach(s=>lines.push(`"${s.t}" costs ${s.e} points for little value. Leave it for later.`));
+    if(!coreLow.length) lines.push('All core stories are in: customers can browse and pay, and staff can handle orders.');
+    finish(planned/best*100-coreLow.length*15-trapHigh.length*8,lines);
+  }
+  return [intro('Prioritise the product backlog',`Give every user story a priority. The team can build about ${T.cap} points. Sprints work through Must, then Should, then Could, until time runs out.`,'Tap Must, Should, Could or Won\'t under each story. Watch the capacity bar.','The product owner owns the backlog and decides what gets built first. MoSCoW is one common method.'),
+    sheet(h('div',{style:'display:grid;gap:4px'},h('div',{class:'meter-l'},h('span',{},'Must + Should vs capacity'),txt),h('div',{class:'meter'},fillEl)),warn,list,left,h('div',{class:'actions'},commit))];
+}
+
+/* ================= 6. Product analyst ================= */
+function stPA(){
+  const reqs=shuffle(REQS).map(r=>({...r,fix:r.fix&&fill(r.fix),marked:false}));
+  let revealed=false;
+  const list=h('div',{style:'display:grid;gap:10px'},reqs.map(r=>{ r.el=h('button',{class:'req','aria-pressed':'false',onclick:()=>{ if(revealed) return; r.marked=!r.marked; r.el.classList.toggle('marked',r.marked); r.el.setAttribute('aria-pressed',r.marked); }},h('span',{},r.t)); return r.el; }));
+  const btn=h('button',{class:'btn',onclick:()=>revealed?done():reveal()},'Send to the team');
+  function reveal(){
+    revealed=true;
+    reqs.forEach(r=>{ const right=r.marked===!!r.vague;
+      r.el.append(h('span',{class:'verdict '+(right?'good-t':'bad-t')},r.vague?(r.marked?'Vague: caught':'Vague: missed'):(r.marked?'Already testable: flagged by mistake':'Testable')));
+      if(r.vague) r.el.append(h('span',{class:'fix'},'Acceptance criteria: '+r.fix)); });
+    btn.textContent='Continue';
+  }
+  function done(){
+    const caught=reqs.filter(r=>r.vague&&r.marked).length, missed=reqs.filter(r=>r.vague&&!r.marked).length, wrong=reqs.filter(r=>!r.vague&&r.marked).length;
+    S.quality=clamp(S.quality+caught*2-missed*3,0,100); S.weeks+=1;
+    finish(100-(missed+wrong)*15,[`${caught} of 4 vague requirements caught and rewritten.`,missed?`${missed} vague requirement${missed>1?'s':''} reached the developers. Expect guesswork.`:'Developers know exactly what "done" means.',wrong?`${wrong} clear requirement${wrong>1?'s were':' was'} flagged by mistake.`:'No false alarms.']);
+  }
+  return [intro('Make every requirement testable','Some of these requirements are too vague to build or test. Find them. When you send them on, they get rewritten as acceptance criteria.','Tap every vague requirement to flag it (it turns orange). Tap again to unflag.','Analysts turn business needs into acceptance criteria, often written as Given / When / Then.'),
+    sheet(h('h3',{},'Requirements from the business'),list,h('div',{class:'actions'},btn))];
+}
+
+/* ================= 7. UI/UX ================= */
+function stUX(){
+  const N=5, slots=new Array(N).fill(null); let tested=false;
+  const comps=UXC.map(c=>({...c,label:cap(fill(c.label))}));
+  const say=sayBox('Drag components onto the phone, or tap a component to add it to the next empty slot.');
+  const phone=h('div',{class:'phone','aria-label':'Home screen'});
+  const palette=h('div',{class:'palette'});
+  const btn=h('button',{class:'btn',disabled:true,onclick:()=>tested?done():test()},'Run a usability test');
+  const result=h('div',{});
+  const slotEls=[];
+  for(let i=0;i<N;i++){ const el=h('button',{class:'pslot'}); slotEls.push(el); dropTarget(el,()=>{ if(!tested&&slots[i]){ slots[i]=null; draw(); } }); }
+  comps.forEach(c=>{ c.el=h('div',{class:'scrap',style:`--c:${c.c};${rot()}`},c.label);
+    draggable(c.el,{onPick:()=>{ select(null); const i=slots.indexOf(null); if(i<0){ say.set('The screen is full. Tap a slot on the phone to clear it.','bad'); return; } slots[i]=c; draw(); snap(slotEls[i]); },
+      onDrop:t=>{ const i=slotEls.indexOf(t); if(i<0) return; slots[i]=c; draw(); snap(t); }});
+    palette.append(c.el); });
+  function draw(){
+    slotEls.forEach((el,i)=>{ const c=slots[i]; el.classList.toggle('full',!!c); el.replaceChildren(c?h('span',{class:'scrap',style:`--c:${c.c}`},c.label):`Slot ${i+1}`); el.setAttribute('aria-label',c?`Slot ${i+1}: ${c.label}. Tap to remove.`:`Empty slot ${i+1}`); });
+    comps.forEach(c=>c.el.classList.toggle('used',slots.includes(c)||tested));
+    btn.disabled=!tested&&slots.some(s=>!s);
+  }
+  phone.append(h('div',{class:'notch'}),...slotEls);
+  function test(){
+    tested=true;
+    const has=id=>slots.some(s=>s.id===id);
+    let raw=0; slots.forEach(s=>raw+=s.k==='good'?16:s.k==='ok'?8:-15);
+    if(!has('grid')) raw-=20; if(!has('cta')) raw-=20; if(slots[0].id==='top') raw+=6; if(slots[N-1].id==='nav') raw+=6;
+    const score=Math.round(clamp(raw/92*100,0,100));
+    S.flags.cleanScreen=!slots.some(s=>s.k==='bad');
+    const f=[has('cta')?`5 of 5 testers found the "${fill('{cta}')}" button in under 5 seconds.`:has('tiny')?'Only 1 of 5 testers found the tiny checkout link.':'No tester could work out how to order.',
+      has('grid')?'Testers liked seeing photos and prices straight away.':'Testers asked: "What do you actually sell?"'];
+    if(has('popup')) f.push('3 of 5 testers closed the app at the newsletter pop-up.');
+    if(has('video')||has('ads')) f.push('Testers said the screen felt cluttered and slow.');
+    f.push(slots[0].id==='top'&&slots[N-1].id==='nav'?'Navigation felt familiar: brand and cart at the top, tabs at the bottom.':'The layout order felt unusual. People expect the brand at the top and tabs at the bottom.');
+    if(has('search')) f.push('Search helped returning customers find things fast.');
+    S.ux=score; S.value+=Math.round(score/10); S.weeks+=1; S._uxLines=f; refreshHUD();
+    result.replaceChildren(sheet(h('h3',{},'Usability test with 5 people'),h('ul',{class:'lines'},f.map(x=>h('li',{},x)))));
+    btn.textContent='Continue'; draw(); say.set('Test done. Read what people said below.','good');
+    result.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  function done(){ finish(S.ux,[...S._uxLines.slice(0,3),`Design score: ${S.ux}/100.`]); }
+  draw();
+  return [intro('Design the home screen','Build the main screen from five components, then test it with five real people.','Drag a component onto a phone slot, or tap it to fill the next empty slot. Tap a slot on the phone to clear it.','Designers wireframe, prototype and test with users before any code is written.'),
+    sheet(h('div',{class:'ux-wrap'},phone,h('div',{style:'display:grid;gap:8px;min-width:0;width:100%'},h('h3',{},'Components'),palette)),say,h('div',{class:'actions'},btn)),result];
+}
+
+/* ================= 8. Developers + DevOps ================= */
+function stDev(){
+  const T=S.team, todo=S.backlog.filter(s=>s.tag!=='W').map(s=>({...s})), wont=S.backlog.filter(s=>s.tag==='W');
+  const done=[], events=shuffle(EVENTS).slice(0,T.sprints);
+  let sprint=0, failMod=0, fails=0, busy=false;
+  const cols={todo:h('div',{style:'display:grid;gap:8px'}),doing:h('div',{style:'display:grid;gap:8px'}),done:h('div',{style:'display:grid;gap:8px'})};
+  const col=(n,b)=>h('div',{class:'col'},h('h4',{},n),b);
+  const TAGC={M:'var(--tomato)',S:'var(--warn)',C:'var(--sky)'};
+  todo.forEach(s=>{ s.el=h('div',{class:'scrap story',style:`--c:${TAGC[s.tag]};${rot()}`},s.t,h('i',{},`${s.e} pts`)); cols.todo.append(s.el); });
+  const nodes=['Commit','Build','Test','Deploy to staging'].map(n=>h('div',{class:'pnode'},n));
+  const pipe=h('div',{class:'pipe','aria-label':'CI/CD pipeline'},nodes.flatMap((n,i)=>i?[h('span',{class:'arrow','aria-hidden':'true'},'→'),n]:[n]));
+  const ev=h('div',{style:'display:grid;gap:10px',role:'status'},h('p',{class:'real'},'Each sprint starts with a decision. Then the team builds and the pipeline ships to staging.'));
+  const log=h('ul',{class:'log'});
+  const title=h('h3',{},`Sprint board · ${T.sprints} sprints · ${T.vel} points each`);
+  const next=h('button',{class:'btn',onclick:plan},'Plan sprint 1');
+  function plan(){
+    if(busy) return; next.hidden=true; const e=events[sprint];
+    ev.replaceChildren(h('div',{class:'role'},`Sprint ${sprint+1} planning · ${e.who}`),h('p',{class:'ev-q'},e.q),h('div',{class:'choices'},shuffle(e.opts).map(o=>h('button',{class:'scrap choice',style:'--c:var(--cobalt)',onclick:()=>choose(o)},o.t))));
+  }
+  function choose(o){
+    const fx=o.fx; if(o.flag) S.flags[o.flag]=true;
+    S.debt+=fx.debt||0; S.quality=clamp(S.quality+(fx.quality||0),0,100); S.budget=+(S.budget+(fx.budget||0)).toFixed(1); S.value+=fx.value||0; failMod+=fx.fail||0;
+    refreshHUD(); ev.replaceChildren(h('p',{class:'ev-r'},o.r)); run(T.vel+(fx.cap||0));
+  }
+  async function run(capacity){
+    busy=true; sprint++; title.textContent=`Sprint ${sprint} of ${T.sprints} · capacity ${capacity} points`;
+    let left=capacity; const take=[];
+    for(const s of todo){ if(!s.taken&&s.e<=left){ take.push(s); left-=s.e; s.taken=true; } }
+    take.forEach(s=>cols.doing.append(s.el)); await wait(700);
+    for(const s of take){ await wait(500); snap(s.el); cols.done.append(s.el); done.push(s); }
+    await pipeline();
+    S.weeks+=2; refreshHUD();
+    log.append(h('li',{},`Sprint ${sprint}: ${take.length} ${take.length===1?'story':'stories'} done, ${capacity-left} of ${capacity} points used. Shipped to staging.`));
+    busy=false;
+    if(todo.every(s=>s.taken)&&sprint<T.sprints){ log.append(h('li',{},'Backlog cleared early. The team pays down tech debt with the spare time.')); S.debt=Math.max(0,S.debt-2); S.quality=clamp(S.quality+3,0,100); refreshHUD(); return complete(); }
+    if(sprint<T.sprints){ next.textContent=`Plan sprint ${sprint+1}`; next.hidden=false; } else complete();
+  }
+  async function pipeline(){
+    nodes.forEach(n=>n.className='pnode');
+    for(let i=0;i<nodes.length;i++){
+      const n=nodes[i]; n.classList.add('run'); await wait(420);
+      const p=clamp(.15+S.debt*.08+failMod-(T.devops?.12:0),.03,.75);
+      if(i===2&&Math.random()<p){ n.className='pnode fail'; fails++; await fixPrompt(); }
+      n.className='pnode ok';
+    }
+  }
+  function fixPrompt(){ return new Promise(res=>{
+    const msg=h('p',{class:'warn'},T.devops?'Pipeline red: 2 tests failing. Priya traces it in minutes.':'Pipeline red: 2 tests failing. Without a DevOps engineer, fixing it costs an extra week.');
+    const b=h('button',{class:'btn red small',onclick:()=>{ b.remove(); msg.remove(); if(!T.devops) S.weeks+=1; S.debt=Math.max(0,S.debt-1); refreshHUD(); res(); }},'Fix the failing tests');
+    ev.append(msg,b); }); }
+  function complete(){
+    const delivered=done.reduce((a,s)=>a+s.v,0);
+    S.done=done.map(({id,t,v,e,core,tag})=>({id,t,v,e,core,tag})); S.value+=delivered; refreshHUD();
+    const missing=todo.filter(s=>!s.taken), coreMissing=STORIES.filter(c=>c.core&&!done.some(d=>d.id===c.id));
+    const lines=[`Delivered ${done.length} stories worth ${delivered} value (best possible: ${S.best}).`];
+    if(missing.length) lines.push(`Not built: ${missing.map(s=>s.t).join(', ')}.`);
+    if(coreMissing.length) lines.push(`Core feature missing: ${coreMissing.map(c=>storyT(c)).join(', ')}. Customers will notice.`);
+    lines.push(`Tech debt: ${S.debt}. Pipeline failures: ${fails}.`);
+    next.hidden=true;
+    ev.replaceChildren(h('p',{class:'ev-r'},'All sprints are done. Time for the sprint review.'),h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>finish(delivered/S.best*100-S.debt*4-fails*3-coreMissing.length*10,lines)},'Sprint review')));
+  }
+  return [intro('Build it in sprints','Each sprint the team pulls the top stories from the backlog and builds them. The CI/CD pipeline then tests and deploys them to staging.','Tap "Plan sprint", make the call, and watch the board. If the pipeline goes red, fix it.','Scrum teams work in time-boxed sprints. DevOps automates build, test and deploy so every change ships safely.'),
+    sheet(title,h('div',{class:'board3'},col('To do',cols.todo),col('In progress',cols.doing),col('Done',cols.done)),wont.length?h('p',{class:'real'},`Left out (Won't): ${wont.map(s=>s.t).join(', ')}.`):null),
+    sheet(h('h3',{},'CI/CD pipeline'),pipe,ev,h('div',{class:'actions'},next),log)];
+}
+
+/* ================= 9. QA ================= */
+function typo(s){ const w=s.split(' '); const k=w.findIndex(x=>/^[A-Za-z]{4,}$/.test(x)); if(k<0) return s+'!'; const x=w[k]; for(let j=1;j<x.length-2;j++){ if(x[j]!==x[j+1]){ w[k]=x.slice(0,j)+x[j+1]+x[j]+x.slice(j+2); return w.join(' '); } } return s+'!'; }
+function stQA(){
+  const T=S.team, nb=clamp(2+S.debt+(T.qa?0:1),2,7);
+  let left=T.qa?40:28, found=0, wrong=0, over=false, started=false, pressure=false;
+  const tiles=(I().qa||QA_LABELS).map(l=>({l:fill(l),bug:null}));
+  shuffle(tiles.map((_,i)=>i)).slice(0,nb).forEach(i=>{ tiles[i].bug=pick(/RM/.test(tiles[i].l)?['neg','typo','tilt','undef']:['typo','tilt','color','undef','dup']); });
+  const timer=h('span',{class:'timer'}), count=h('span',{}), say=sayBox('');
+  const grid=h('div',{class:'app-grid locked-grid'});
+  const upd=()=>{ timer.textContent=pressure?`${left}s`:'No timer'; timer.classList.toggle('low',pressure&&left<=8); count.textContent=T.qa?`${found} of ${nb} bugs found`:`${found} bugs found · total unknown (no QA test plan)`; };
+  tiles.forEach(t=>{ const txt=t.bug==='typo'?typo(t.l):t.bug==='neg'?t.l.replace('RM ','RM -'):t.bug==='undef'?'undefined':t.bug==='dup'?t.l+t.l:t.l;
+    t.el=h('button',{class:'scrap tile'+(/Pay now|Add to cart/.test(t.l)?' act':'')+(t.bug==='tilt'?' b-tilt':'')+(t.bug==='color'?' b-color':''),onclick:()=>hit(t)},txt); grid.append(t.el); });
+  function hit(t){
+    if(over||!started||t.found) return;
+    if(t.bug){ t.found=true; found++; t.el.classList.add('squashed'); say.set('Bug logged.','good'); upd(); if(found===nb) end(); }
+    else { wrong++; bounce(t.el); if(pressure){ left=Math.max(0,left-2); say.set('Not a bug. Minus 2 seconds.','bad'); } else say.set('Not a bug. False alarms lower your score a little.','bad'); upd(); if(pressure&&left<=0) end(); }
+  }
+  const sw=h('label',{class:'switch'},h('input',{type:'checkbox',id:'pressure',onchange:e=>{pressure=e.target.checked;upd();}}),'Pressure mode: add a timer');
+  const startBtn=h('button',{class:'btn',onclick:()=>{ started=true; startBtn.remove(); sw.remove(); grid.classList.remove('locked-grid'); say.set('Look closely at every tile.');
+    if(pressure){ const id=setInterval(()=>{ left--; upd(); if(left<=0) end(); },1000); timers.push(id); } }},'Start testing');
+  const stopBtn=h('button',{class:'btn sec',onclick:()=>{ if(started) end(); }},"I'm done testing");
+  function end(){
+    if(over) return; over=true; clearTimers();
+    const missed=tiles.filter(t=>t.bug&&!t.found); missed.forEach(t=>t.el.classList.add('missed'));
+    S.escapedBugs=missed.map(t=>({l:t.l,bug:t.bug})); S.flags.allBugs=!missed.length;
+    S.quality=clamp(S.quality+found*2-missed.length*6,0,100); S.weeks+=1; refreshHUD();
+    stopBtn.remove();
+    say.set(missed.length?`${missed.length} bug${missed.length>1?'s':''} escaped (dashed red outline).`:'Every bug caught!',missed.length?'bad':'good');
+    const lines=[`${found} of ${nb} bugs caught.`,missed.length?`${missed.length} escaped to UAT: ${missed.map(t=>`"${t.l}" showed ${BUGDESC[t.bug]}`).join('; ')}.`:'Nothing escaped. UAT will be smooth.',wrong?`${wrong} false alarm${wrong>1?'s':''}.`:'No false alarms.',`More tech debt means more bugs. This build had ${nb}.`];
+    grid.after(h('div',{class:'actions',style:'justify-content:center'},h('button',{class:'btn',onclick:()=>finish(found/nb*100-wrong*4,lines)},'See QA results')));
+  }
+  upd();
+  return [intro('Hunt the bugs',`This is the staging build of ${I().name}. Look for spelling mistakes, wrong amounts, crooked or off-colour tiles and broken text.`,'Tap every tile that looks broken. Tap "I\'m done testing" when you have found them all. Turn on pressure mode if you want a timer.','QA runs functional, regression and exploratory tests. A bug found here is far cheaper than one a customer finds.'),
+    sheet(h('div',{class:'qa-bar'},timer,count),grid,say,h('div',{class:'actions',style:'justify-content:center'},sw,startBtn,stopBtn))];
+}
+
+/* ================= 10. UAT ================= */
+function stUAT(){
+  const cards=shuffle([...UAT_BASE.map(c=>({...c})),...S.escapedBugs.slice(0,3).map(b=>({who:'Found during UAT',t:`The "${b.l}" screen shows ${BUGDESC[b.bug]}.`,k:'defect',escaped:1}))]);
+  const OPT=[['fix','Fix now'],['backlog','Add to backlog'],['reject','Reject']];
+  const SCORE={defect:{fix:1,backlog:.3,reject:0},scope:{backlog:1,reject:.7,fix:.1},cosmetic:{backlog:1,fix:.8,reject:.6}};
+  const RES={defect:'A real defect: it blocks the business. Fix it before launch.',scope:'A new feature request (scope creep). It belongs in the backlog for a later release.',cosmetic:'Cosmetic: nice to fix, not a blocker.'};
+  let signed=false;
+  const btn=h('button',{class:'btn',disabled:true,onclick:()=>signed?done():sign()},'Ask for sign-off');
+  const list=h('div',{style:'display:grid;gap:10px'},cards.map(c=>{
+    c.choice=null;
+    const opts=h('div',{class:'opts'},OPT.map(([k,l])=>h('button',{class:'opt','aria-pressed':'false',onclick:e=>{ if(signed) return; c.choice=k; opts.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-pressed',b===e.currentTarget)); btn.disabled=cards.some(x=>!x.choice); }},l)));
+    c.el=h('div',{class:'fcard'},h('div',{class:'who'},c.who),h('div',{class:'txt'},c.t),opts); return c.el; }));
+  function sign(){ signed=true; cards.forEach(c=>{ const s=SCORE[c.k][c.choice]; c.el.style.borderColor=s>=.8?'var(--good)':s>=.5?'var(--warn)':'var(--bad)'; c.el.append(h('div',{class:s>=.8?'good-t':s>=.5?'':'bad-t',style:'font-size:14px;font-weight:700'},RES[c.k])); }); btn.textContent='Continue'; }
+  function done(){
+    const fixes=cards.filter(c=>c.choice==='fix').length, open=cards.filter(c=>c.k==='defect'&&c.choice!=='fix');
+    const escFixed=cards.filter(c=>c.escaped&&c.choice==='fix').length, scopeIn=cards.filter(c=>c.k==='scope'&&c.choice==='fix').length;
+    S.flags.scopeGuard=cards.filter(c=>c.k==='scope').every(c=>c.choice==='backlog');
+    S.openDefects=open.length; S.quality=clamp(S.quality+escFixed*4-open.length*5-scopeIn*3,0,100);
+    const wk=Math.ceil(fixes/2)+scopeIn; S.budget=+(S.budget-fixes*1.5).toFixed(1); S.weeks+=wk; refreshHUD();
+    const score=cards.reduce((a,c)=>a+SCORE[c.k][c.choice],0)/cards.length*100;
+    finish(score,[`${fixes} fixes made (RM ${(fixes*1.5).toFixed(1)}k, ${wk} week${wk===1?'':'s'}).`,open.length?`${open.length} real defect${open.length>1?'s':''} will reach customers.`:'No known defects go live.',scopeIn?`${scopeIn} new feature${scopeIn>1?'s were':' was'} squeezed in at the last minute and delayed launch.`:'New feature requests went to the backlog for the next release.',score>=70?'The business signs off. Ready to launch.':'The business signs off with concerns.']);
+  }
+  return [intro('User acceptance testing',`The business team tries ${I().name} on real tasks and sends feedback.`,'For each card, tap Fix now, Add to backlog or Reject. Then ask for sign-off.','UAT confirms the product meets the business need before go-live. The business signs it off.'),
+    sheet(h('h3',{},'UAT feedback'),list,h('div',{class:'actions'},btn))];
+}
+
+
+/* ================= 11. Launch day: live ops (real-time) ================= */
+function stLive(){
+  const T=S.team||{devops:true,qa:true}, idea=I();
+  let relaxed=false, running=false, over=false;
+  const TYPES={
+    bug:{label:'Bug',to:'dev',c:'var(--tomato)',pool:['Main button does nothing on Android','Prices show "RM NaN"','App crashes on sign in','Images missing in the {catalog}','Search returns nothing']},
+    server:{label:'Server',to:'ops',c:'var(--night)',pool:['CPU at 95%: traffic spike','Database slow: 4-second responses','Payment webhook failing','Disk 90% full','Error rate jumped to 8%']},
+    ticket:{label:'Customer',to:'sup',c:'var(--cobalt)',pool:['"Where is my order?"','"How do I reset my password?"','"I was charged twice"','"Can I get a refund?"','"Do you open on Sunday?"']},
+    request:{label:'New idea',to:'po',c:'var(--mustard)',light:1,pool:['"Please add dark mode!"','"Can we get referral codes?"','"Do you support Apple Pay?"','"Add a wishlist"','"Can I schedule it for later?"']},
+  };
+  const TEAM=[
+    {id:'dev',name:'Ken',job:'Fixes bugs',npc:'ken',busy:T.qa?1400:1900},
+    {id:'ops',name:'Priya',job:'Servers',npc:'priya',busy:T.devops?1000:2600},
+    {id:'sup',name:'Nadia',job:'Customers',npc:'nadia',busy:1200},
+    {id:'po',name:'Sofia',job:'New ideas',npc:'sofia',busy:900},
+  ];
+  const W={bug:3+S.debt+(S.escapedBugs||[]).length+(S.openDefects||0)*2,server:2+(T.devops?0:2),ticket:3,request:2};
+  const st={spawned:0,solved:0,expired:0,wrong:0,uptime:100,csat:70,users:0,revenue:0};
+  let cards=[], uid=0, t0=0, nextSpawn=0, lastTick=0;
+  const el={time:h('b',{},'0:45'),users:h('b',{},'0'),uptime:h('b',{},'100%'),rev:h('b',{},'RM 0')};
+  const csFill=h('i');
+  const lstat=(k,v)=>h('div',{class:'lstat'},h('span',{},k),v);
+  const bar=h('div',{class:'livebar'},lstat('Time left',el.time),lstat('Users online',el.users),lstat('Uptime',el.uptime),lstat('Revenue today',el.rev));
+  const happy=h('div',{style:'display:grid;gap:4px'},h('div',{class:'meter-l'},h('span',{},'Customer happiness'),h('b',{class:'cs-val'},'70%')),h('div',{class:'meter'},csFill));
+  const queue=h('div',{class:'lq','aria-label':'Incoming problems','aria-live':'polite'});
+  const say=sayBox('Drag each problem to the right person, or tap the problem and then tap the person.');
+  const team=h('div',{class:'lteam'},TEAM.map(r=>{ r.bar=h('i'); r.el=h('button',{class:'resp','aria-label':`${r.name}, ${r.job}`},av(NPC[r.npc]),h('span',{},r.name),h('small',{},r.job),h('span',{class:'busy'},r.bar)); r.until=0; dropTarget(r.el); r.el.addEventListener('click',()=>{ if(!sel&&running) say.set('Tap a problem card first, then tap the person.'); }); return r.el; }));
+  const relaxedBox=h('label',{class:'switch'},h('input',{type:'checkbox',id:'relaxed',onchange:e=>{relaxed=e.target.checked;}}),'Relaxed speed (60 seconds, slower)');
+  const goBtn=h('button',{class:'btn',onclick:go},'Go live');
+  const after=h('div',{});
+  const DUR=()=>relaxed?60000:45000, LIFE=()=>relaxed?12000:8000;
+  function pickType(){ const tot=Object.values(W).reduce((a,b)=>a+b,0); let r=Math.random()*tot; for(const [k,w] of Object.entries(W)){ if((r-=w)<0) return k; } return 'ticket'; }
+  function spawn(now){
+    if(cards.length>=6){ expire(cards[0]); }
+    const type=pickType(), ty=TYPES[type];
+    const c={id:++uid,type,born:now,life:LIFE()};
+    c.lifeBar=h('i');
+    c.el=h('div',{class:'scrap lcard'+(ty.light?' light':''),style:`--c:${ty.c};${rot()}`,'data-type':type},h('span',{class:'tl'},ty.label),h('span',{},cap(fill(pick(ty.pool)))),h('span',{class:'life'},c.lifeBar));
+    draggable(c.el,{onPick:()=>say.set(`Now tap who should handle this ${ty.label.toLowerCase()}.`),onDrop:t=>assign(c,t)});
+    cards.push(c); queue.append(c.el); st.spawned++; sfx('tick');
+  }
+  function removeCard(c){ cards=cards.filter(x=>x!==c); if(sel&&sel.el===c.el) select(null); c.el.remove(); }
+  function expire(c){ removeCard(c); st.expired++; st.csat-=6; if(c.type==='server') st.uptime-=3; if(c.type==='bug') st.uptime-=1; say.set(`Missed: a ${TYPES[c.type].label.toLowerCase()} was left too long.`,'bad'); }
+  function assign(c,target){
+    if(over||!cards.includes(c)) return;
+    const r=TEAM.find(x=>x.el===target); if(!r) return;
+    const now=performance.now();
+    if(r.until>now){ bounce(c.el); say.set(`${r.name} is busy. Wait a moment or pick someone else.`,'bad'); return; }
+    if(r.id!==TYPES[c.type].to){ st.wrong++; st.csat-=3; bounce(c.el); const right=TEAM.find(x=>x.id===TYPES[c.type].to); say.set(`Wrong person. ${right.name} handles ${TYPES[c.type].label.toLowerCase()} problems.`,'bad'); return; }
+    removeCard(c); st.solved++; st.csat+=4; if(c.type==='server') st.uptime=Math.min(100,st.uptime+1);
+    r.until=now+r.busy; r.start=now; r.el.classList.add('isbusy');
+    r.el.append(h('span',{class:'plus'},'+1')); later(()=>r.el.querySelector('.plus')?.remove(),1000);
+    say.set(`${r.name} is on it. Solved ${st.solved}.`,'good');
+  }
+  function go(){ queue.classList.add('on');
+    if(running) return; running=true; goBtn.remove(); relaxedBox.remove(); sfx('whoosh');
+    t0=performance.now(); nextSpawn=t0+400; lastTick=t0;
+    const id=setInterval(loop,100); timers.push(id);
+  }
+  function loop(){
+    const now=performance.now(), el_=now-t0, dur=DUR();
+    if(now>=nextSpawn&&el_<dur-1500){ spawn(now); const k=el_/dur; nextSpawn=now+(relaxed?3200-1400*k:2300-1200*k); }
+    cards.slice().forEach(c=>{ const left=1-(now-c.born)/c.life; c.lifeBar.style.width=Math.max(0,left*100)+'%'; c.el.classList.toggle('urgent',left<.3); if(left<=0) expire(c); });
+    TEAM.forEach(r=>{ if(r.until>now){ r.bar.style.width=((now-r.start)/r.busy*100)+'%'; } else if(r.el.classList.contains('isbusy')){ r.el.classList.remove('isbusy'); r.bar.style.width='0'; } });
+    if(now-lastTick>500){ lastTick=now; st.users+=Math.max(0,Math.round(st.csat/12)); st.revenue+=st.users*idea.price*idea.freq/900; }
+    st.csat=clamp(st.csat,0,100); st.uptime=clamp(st.uptime,0,100);
+    const secs=Math.max(0,Math.ceil((dur-el_)/1000));
+    el.time.textContent=`0:${String(secs).padStart(2,'0')}`; el.users.textContent=st.users.toLocaleString('en-MY'); el.uptime.textContent=st.uptime.toFixed(0)+'%'; el.rev.textContent=fmtRM(st.revenue);
+    csFill.style.width=st.csat+'%'; csFill.style.background=st.csat>=60?'var(--accent)':st.csat>=35?'var(--mustard)':'var(--tomato)'; happy.querySelector('.cs-val').textContent=Math.round(st.csat)+'%';
+    if(el_>=dur) end();
+  }
+  function end(){
+    if(over) return; over=true; running=false; clearTimers(); select(null);
+    const left=cards.length; cards.forEach(c=>c.el.classList.add('locked-grid'));
+    const score=clamp(Math.round(st.solved/Math.max(1,st.spawned)*80+st.uptime*.2-st.wrong*2),0,100);
+    S.live={...st,csat:Math.round(st.csat),score}; S.flags.firefighter=st.uptime>=95&&st.expired<=2;
+    S.quality=clamp(S.quality+Math.round((score-60)/8),0,100); S.weeks+=0; refreshHUD();
+    sfx(score>=60?'win':'bad'); if(score>=60) confetti(queue);
+    say.set(`Doors closed for the day. ${st.solved} of ${st.spawned} problems solved.`,score>=60?'good':'bad');
+    after.replaceChildren(h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>finish(score,[
+      `Solved ${st.solved} of ${st.spawned} problems. Missed ${st.expired}${left?` (${left} still waiting at the end)`:''}.`,
+      `Uptime ${st.uptime.toFixed(0)}%. Customer happiness ${Math.round(st.csat)}%.`,
+      st.wrong?`${st.wrong} problem${st.wrong>1?'s were':' was'} sent to the wrong person.`:'Every problem went to the right person.',
+      `${st.users.toLocaleString('en-MY')} people tried ${idea.name} on day one.`])},'See launch day results')));
+  }
+  return [intro('Launch day: live ops',`${idea.name} goes live. Problems pop up in real time: bugs, server alarms, customer questions and new ideas. Send each one to the right person before its timer runs out.`,'Drag a problem card onto a person, or tap the card and then tap the person. Bugs go to Ken, servers to Priya, customers to Nadia, new ideas to Sofia. People are busy for a moment after each job.','On launch day the whole team sits in a "war room", watching dashboards and fixing issues as they appear.'),
+    h('section',{class:'sheet'},h('div',{class:'live-head'},h('span',{class:'live'},'LIVE'),h('h3',{},'War room')),bar,happy,queue,team,say,h('div',{class:'actions'},relaxedBox,goBtn),after)];
+}
+
+/* ================= 12. Real users ================= */
+function computeLaunch(){
+  const coreDone=STORIES.filter(c=>c.core&&S.done.some(d=>d.id===c.id)).length, delivered=S.done.reduce((a,s)=>a+s.v,0), canPay=S.done.some(d=>d.id==='pay');
+  let sat=.3*S.quality+.25*S.ux+.3*Math.min(100,delivered/S.best*100)+15*(coreDone/3)-7*S.openDefects;
+  if(S.live) sat+=(S.live.csat-70)*.15;
+  if(!canPay) sat=Math.min(sat,35);
+  sat=clamp(Math.round(sat),5,98);
+  const invited=500, active=Math.round(invited*sat/100*.9), retention=Math.round(sat*.7), rating=(1+sat/100*4).toFixed(1);
+  return {sat,canPay,invited,active,retention,rating,revenue:Math.round(active*retention/100*I().price*I().freq)};
+}
+function stBeta(){
+  const L=computeLaunch(); S.launch=L;
+  const SH=['#3557c6','#e5533d','#45a865','#ef7a19','#9478d1','#1f9e93','#f2b632'];
+  const people=Array.from({length:8},()=>{ const g=Math.random()<.5?'m':'f'; const hw=g==='f'?pick(['none','tudung','tudung']):pick(['none','none','cap','songkok']);
+    const s=clamp(L.sat+Math.round(Math.random()*40-20),0,100), st=clamp(Math.round(s/20),1,5);
+    return {o:{g,hw,style:pick(['casual','smart','traditional']),color:pick(SH),skin:pick(SKINS),hair:pick(HAIRS),tcolor:pick(['#e7a3b8','#9fc4e8','#f2b632','#2b3446']),capc:pick(SH)},st,q:!L.canPay&&Math.random()<.6?'It does not even do the main thing!':pick(REVIEWS[st])}; });
+  const street=h('div',{class:'street','aria-hidden':'true'},h('div',{class:'sun'}),
+    h('div',{class:'bld',style:'left:4%;width:70px;height:110px;--c:#9fb6c9'}),h('div',{class:'bld',style:'left:18%;width:56px;height:80px;--c:#c7b8ee'}),h('div',{class:'bld',style:'left:32%;width:80px;height:126px;--c:#a8d8a0'}),
+    h('div',{class:'shop'},h('div',{class:'sign'},I().name),h('div',{class:'door'})),h('div',{class:'road'}));
+  const reviews=h('div',{class:'reviews'}), tail=h('div',{style:'display:grid;gap:22px'});
+  people.forEach((p,i)=>{
+    later(()=>{ const w=h('div',{class:'walker'},av(p.o)); street.append(w); later(()=>w.remove(),3500); },i*450);
+    later(()=>{ reviews.append(h('div',{class:'rev'},av(p.o),h('div',{},h('div',{class:'stars','aria-label':`${p.st} of 5 stars`},'★'.repeat(p.st)+'☆'.repeat(5-p.st)),h('p',{},`"${p.q}"`)))); },900+i*450);
+  });
+  later(()=>{
+    tail.replaceChildren(sheet(h('h3',{},'First month with real users'),
+      h('div',{class:'metrics'},
+        h('div',{class:'scrap metric',style:'--c:var(--night)'},h('span',{},'Active customers'),h('b',{},`${L.active} / ${L.invited}`)),
+        h('div',{class:'scrap metric',style:'--c:var(--cobalt)'},h('span',{},'Average rating'),h('b',{},`${L.rating} ★`)),
+        h('div',{class:'scrap metric',style:'--c:var(--leaf)'},h('span',{},'Come back next month'),h('b',{},`${L.retention}%`)),
+        h('div',{class:'scrap metric light',style:'--c:var(--mustard)'},h('span',{},'Revenue per month'),h('b',{},fmtRM(L.revenue)))),
+      !L.canPay?h('p',{class:'warn'},`A core feature was never built ("${storyT(STORIES[1])}"), so most customers could not do the main thing.`):null,
+      h('div',{class:'actions'},h('button',{class:'btn',onclick:()=>finish(L.sat,[`Customer satisfaction: ${L.sat}/100.`,`${L.active} active customers and ${fmtRM(L.revenue)} a month.`,S.openDefects?`${S.openDefects} known defect${S.openDefects>1?'s':''} hurt the reviews.`:'No known defects at launch.'])},'Close the beta'))));
+  },900+people.length*450+300);
+  return [intro('Launch to real users',`${I().name} opens to 500 beta customers. Everything you did so far shows up in how they feel.`,'Watch customers arrive and read their reviews.','A beta or soft launch with real users measures adoption, satisfaction and revenue before a full rollout.'),
+    sheet(street,h('h3',{},'What customers say'),reviews),tail];
+}
+
+/* ================= report card ================= */
+function gradeInfo(){
+  const vals=STG.map(s=>S.scores[s.id]??0), avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  const grade=avg>=90?'S':avg>=80?'A':avg>=65?'B':avg>=50?'C':'D';
+  return {avg,grade,rank:RANKS[grade]};
+}
+function rr(x,X,Y,w,hh,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+hh,r); x.arcTo(X+w,Y+hh,X,Y+hh,r); x.arcTo(X,Y+hh,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+function wrapText(x,text,X,Y,maxW,lh,maxLines){
+  const lines=[]; let line='';
+  for(const w of text.split(' ')){ const t=line?line+' '+w:w; if(x.measureText(t).width>maxW&&line){ lines.push(line); line=w; } else line=t; }
+  if(line) lines.push(line);
+  if(lines.length>maxLines){ lines.length=maxLines; let l=lines[maxLines-1]; while(l.length&&x.measureText(l+'…').width>maxW) l=l.slice(0,-1); lines[maxLines-1]=l+'…'; }
+  lines.forEach((l,i)=>x.fillText(l,X,Y+i*lh));
+}
+function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+async function makeCard(){
+  const W=1080,H=1350, c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  try{ await Promise.race([Promise.all(['600 60px Outfit','700 40px Outfit','700 44px Caveat','500 28px Outfit','800 24px Outfit'].map(f=>document.fonts.load(f))),new Promise(r=>setTimeout(r,2500))]); }catch(e){}
+  const G=gradeInfo(), L=S.launch||computeLaunch(), idea=I();
+  const F=(w,s,f)=>`${w} ${s}px ${f==='h'?'Caveat, cursive':'Outfit, Segoe UI, sans-serif'}`;
+  // cutting mat
+  x.fillStyle='#F6FEF6'; x.fillRect(0,0,W,H);
+  [[W*.9,0],[0,H*.55]].forEach(([gx,gy])=>{ const gr=x.createRadialGradient(gx,gy,0,gx,gy,620); gr.addColorStop(0,'#D3F3D9'); gr.addColorStop(1,'rgba(246,254,246,0)'); x.fillStyle=gr; x.fillRect(0,0,W,H); });
+  x.strokeStyle='rgba(16,40,20,.05)'; x.lineWidth=2;
+  for(let i=0;i<=W;i+=45){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke();}
+  for(let j=0;j<=H;j+=45){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke();}
+  // confetti scraps
+  const conf=['#e5533d','#f2b632','#3557c6','#45a865','#ef8db0','#9478d1','#1f9e93'];
+  for(let i=0;i<22;i++){ x.save(); x.translate(Math.random()*W,Math.random()*H); x.rotate(Math.random()*6); x.fillStyle=conf[i%conf.length]; x.globalAlpha=.85; rr(x,-14,-8,28,16,4); x.fill(); x.restore(); }
+  // paper sheet
+  x.save(); x.translate(W/2,H/2+10); x.rotate(-.012); x.shadowColor='rgba(16,40,20,.18)'; x.shadowBlur=60; x.shadowOffsetY=24; x.fillStyle='#ffffff'; rr(x,-470,-600,940,1200,28); x.fill(); x.restore();
+  // tape
+  x.save(); x.translate(W/2,92); x.rotate(-.05); x.fillStyle='rgba(242,182,50,.7)'; x.fillRect(-90,-20,180,40); x.restore();
+  const L0=110;
+  x.fillStyle='#23262e'; x.textBaseline='alphabetic';
+  // logo letters
+  const letters='INITIATE'; let lx=L0;
+  letters.split('').forEach((ch,i)=>{ x.save(); x.translate(lx+22,180); x.rotate((i%2?1:-1)*.06); x.fillStyle=conf[i%conf.length]; rr(x,-22,-36,44,52,8); x.fill(); x.fillStyle=i===1?'#23262e':'#fff'; x.font=F(700,36,'d'); x.textAlign='center'; x.fillText(ch,0,4); x.restore(); lx+=52; });
+  x.textAlign='left';
+  x.fillStyle='#5d6271'; x.font=F(800,22,'b'); x.fillText('PRODUCT LIFECYCLE REPORT CARD',L0,250);
+  // avatar
+  try{ const im=await loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(avatarSVG(S.player))); x.save(); x.shadowColor='rgba(0,0,0,.25)'; x.shadowBlur=12; x.shadowOffsetY=6; x.fillStyle='#f1efe9'; rr(x,L0,280,220,250,16); x.fill(); x.restore(); x.drawImage(im,L0+20,292,180,210); }catch(e){}
+  // name + idea
+  x.fillStyle='#23262e'; x.font=F(700,58,'d'); x.fillText(S.player.name,L0+250,340);
+  x.fillStyle='#3557c6'; x.font=F(700,38,'d'); x.fillText(idea.name,L0+250,392);
+  x.fillStyle='#23262e'; x.font=F(700,34,'h'); wrapText(x,`"${S.oneLiner||idea.pitch}"`,L0+250,440,390,38,3);
+  // grade circle
+  x.save(); x.translate(W-210,420); x.rotate(.08); x.fillStyle='#6BE683'; x.beginPath(); x.arc(0,0,92,0,Math.PI*2); x.fill(); x.fillStyle='#23262e'; x.font=F(700,110,'d'); x.textAlign='center'; x.fillText(G.grade,0,38); x.restore();
+  x.textAlign='center'; x.font=F(800,24,'b'); x.fillStyle='#23262e'; x.fillText(G.rank.toUpperCase(),W-210,545); x.textAlign='left';
+  // stats boxes
+  const stats=[['Rating',`${L.rating}★`,'#3557c6'],['Customers',String(L.active),'#262828'],['Revenue / month',fmtRM(L.revenue),'#1A7F55'],['Shipped in',`${S.weeks} weeks`,'#e5533d']];
+  stats.forEach(([k,v,col],i)=>{ const bx=L0+i*218, by=590; x.save(); x.translate(bx+100,by+65); x.rotate((i%2?1:-1)*.015); x.fillStyle=col; rr(x,-100,-65,200,130,12); x.fill(); x.fillStyle='rgba(255,255,255,.85)'; x.font=F(800,18,'b'); x.fillText(k.toUpperCase(),-84,-28); x.fillStyle='#fff'; x.font=F(700,v.length>9?30:38,'d'); x.fillText(v,-84,26); x.restore(); });
+  // lifecycle bars
+  x.fillStyle='#5d6271'; x.font=F(800,22,'b'); x.fillText('SCORE BY STAGE',L0,790);
+  STG.forEach((st,i)=>{ const v=S.scores[st.id]??0, col=i<6?0:1, row=i<6?i:i-6, bx=L0+col*430, by=820+row*44;
+    x.fillStyle='#23262e'; x.font=F(700,22,'b'); x.fillText(st.short,bx,by+20);
+    x.fillStyle='#E3F8E6'; rr(x,bx+150,by+4,210,20,10); x.fill();
+    x.fillStyle=v>=75?'#1CBB6C':v>=50?'#f2b632':'#e5533d'; rr(x,bx+150,by+4,Math.max(20,210*v/100),20,10); x.fill();
+    x.fillStyle='#23262e'; x.font=F(800,20,'b'); x.fillText(String(v),bx+372,by+21); });
+  // badges + level
+  x.fillStyle='#5d6271'; x.font=F(800,22,'b'); x.fillText(`LEVEL ${S.level} · ${S.badges.length} BADGE${S.badges.length===1?'':'S'}`,L0,1110);
+  let bx=L0, by=1130;
+  S.badges.slice(0,6).forEach((id,i)=>{ const b=BADGES.find(z=>z.id===id); x.font=F(800,22,'b'); const w=x.measureText(b.name).width+36; if(bx+w>W-L0){ bx=L0; by+=50; } x.fillStyle=conf[i%conf.length]; rr(x,bx,by,w,40,20); x.fill(); x.fillStyle='#fff'; x.fillText(b.name,bx+18,by+28); bx+=w+12; });
+  if(S.badges.length>6){ x.font=F(800,22,'b'); x.fillStyle='#5d6271'; x.fillText(`+${S.badges.length-6} more`,bx,by+28); }
+  if(!S.badges.length){ x.fillStyle='#5d6271'; x.font=F(600,22,'b'); x.fillText('No badges yet. Replay to earn some.',L0,1158); }
+  // footer
+  x.fillStyle='#23262e'; x.font=F(700,30,'h'); x.fillText('Napkin → BMC → Pitch → Scrum + DevOps → QA → UAT → Real users',L0,1258);
+  return c;
+}
+function postText(){
+  const G=gradeInfo(), L=S.launch||computeLaunch();
+  return `I just took "${I().name}" from a scattered idea to launch in INITIATE, a product lifecycle game.\n\nGrade ${G.grade} (${G.rank}) · ${L.rating}★ from real users · ${L.active} customers · ${fmtRM(L.revenue)} a month · shipped in ${S.weeks} weeks.\n\nIdea Napkin → Business Model Canvas → Pitch → PM → Product Owner → Analyst → UI/UX → Scrum sprints + CI/CD → QA → UAT → Real users.\n\nPlay it free: https://yushabdullah.github.io/initiate/\n\n#INITIATE #ProductManagement #Scrum #DevOps #Startup`;
+}
+function reportScreen(){
+  const G=gradeInfo(), L=S.launch||computeLaunch();
+  const img=h('img',{class:'cardimg',alt:`Report card: ${S.player.name}, ${I().name}, grade ${G.grade}, ${G.rank}`});
+  let cardCanvas=null, dl=null;
+  const fname=`INITIATE-scorecard-${(S.player.name||'player').replace(/[^A-Za-z0-9]+/g,'-')}.png`;
+  const saveNote=h('p',{class:'real',style:'text-align:center'},'To save it: press and hold the card on a phone, or right-click it and choose "Save image" on a computer.');
+  const saveBtn=h('button',{class:'btn',hidden:true,onclick:async()=>{
+    if(!cardCanvas||!dl) return;
+    try{
+      const blob=await new Promise((res,rej)=>cardCanvas.toBlob(b=>b?res(b):rej(new Error('blob')),'image/png'));
+      await dl.save({filename:fname,data:blob}); say.set('Scorecard saved. Attach it to your post.','good');
+    }catch(e){
+      const c=e&&e.code;
+      if(c==='declined') say.set('Save cancelled.');
+      else if(c==='rate_limited') say.set('A save prompt is already open.');
+      else { saveBtn.hidden=true; saveNote.hidden=false; say.set('Saving is not available here. Press and hold the card image instead.','bad'); }
+    }
+  }},'Save or share scorecard image');
+  makeCard().then(c=>{ cardCanvas=c; img.src=c.toDataURL('image/png'); }).catch(()=>{ img.alt='The report card image could not be drawn in this browser.'; });
+  if(!window.claude){ dl={save:async({filename,data})=>{ const f=new File([data],filename,{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})&&matchMedia('(pointer:coarse)').matches){ try{ await navigator.share({files:[f],text:postText()}); return; }catch(e){ if(e&&e.name==='AbortError'){ const x=new Error('declined'); x.code='declined'; throw x; } } }
+      const u=URL.createObjectURL(data), a=h('a',{href:u,download:filename}); document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }};
+    saveBtn.hidden=false; saveNote.textContent='On a phone this opens your share sheet, so you can post the image straight to LinkedIn, WhatsApp, Instagram and more.'; }
+  try{ window.claude?.use?.('downloads').then(d=>{ if(d){ dl=d; saveBtn.hidden=false; saveNote.textContent='On the Claude phone app, this opens your share sheet, so you can post the image straight to LinkedIn, WhatsApp, Instagram and more.'; } }).catch(()=>{}); }catch(e){}
+  const text=postText();
+  const ta=h('textarea',{class:'posttext',id:'posttext','aria-label':'Post text',readonly:true},text);
+  const say=sayBox('Step 1: save the scorecard image. Step 2: tap a platform below (the text is filled in for you). Step 3: attach the image to your post.');
+  const enc=encodeURIComponent(text);
+  const link=(label,href,col,light)=>h('a',{class:'btn small',href,target:'_blank',rel:'noopener noreferrer',style:`--c:${col};--t:${light?'var(--ink)':'#fff'}`},label);
+  const copy=h('button',{class:'btn small sec',onclick:()=>{ const ok=()=>say.set('Post text copied. Paste it into your post.','good');
+    try{ navigator.clipboard.writeText(text).then(ok,()=>{ ta.select(); say.set('Copy did not work here. The text is selected, so copy it yourself.','bad'); }); }catch(e){ ta.select(); say.set('The text is selected. Copy it yourself.','bad'); } }},'Copy post text');
+  const weakest=[...STG].sort((a,b)=>(S.scores[a.id]??0)-(S.scores[b.id]??0)).slice(0,2);
+  return [
+    h('section',{class:'intro'},playerAv('bob'),h('div',{class:'sheet'},h('div',{class:'role'},'Impact report'),h('h2',{},`${I().name}: grade ${G.grade}, ${G.rank}`),h('p',{},`From a scribble on a napkin to ${L.active} customers and ${fmtRM(L.revenue)} a month in ${S.weeks} weeks. Average score ${G.avg}/100.`))),
+    sheet(h('h3',{},'Your report card'),img,h('div',{class:'actions',style:'justify-content:center'},saveBtn),saveNote),
+    sheet(h('h3',{},'Share it'),say,h('div',{class:'share'},
+      link('LinkedIn',`https://www.linkedin.com/feed/?shareActive=true&text=${enc}`,'#0a66c2'),
+      link('X',`https://x.com/intent/post?text=${enc}`,'#23262e'),
+      link('WhatsApp',`https://wa.me/?text=${enc}`,'#1f9e5a'),
+      link('Threads',`https://www.threads.net/intent/post?text=${enc}`,'#5d6271'),
+      copy),ta),
+    sheet(h('h3',{},'Score by stage'),STG.map(st=>{ const v=S.scores[st.id]??0; return h('div',{class:'rep-row'},h('span',{},STG_TITLE[st.id]),h('div',{class:'bar'},h('i',{style:`width:${v}%;--c:${v>=75?'var(--leaf)':v>=50?'var(--mustard)':'var(--tomato)'}`})),h('span',{style:'text-align:right'},v)); })),
+    sheet(h('h3',{},'What to improve next time'),h('ul',{class:'lines'},weakest.map(st=>h('li',{},h('b',{},STG_TITLE[st.id]+': '),LESSON[st.id])))),
+    sheet(h('h3',{},`Badges (${S.badges.length} of ${BADGES.length})`),h('div',{class:'badges'},BADGES.map(b=>h('span',{class:'badge'+(S.badges.includes(b.id)?'':' off'),style:`--c:${b.c}`,title:b.how},b.name)))),
+    h('div',{class:'actions',style:'justify-content:center'},
+      h('button',{class:'btn',onclick:()=>{ const p=S.player, id=S.ideaId, xp=S.xp, lv=S.level, bd=S.badges; S=newState(p); S.ideaId=id; S.oneLiner=I().pitch; S.xp=xp; S.level=lv; S.badges=bd; S.screen='map'; prevNums=null; save(); render(); }},`Replay ${I().name}`),
+      h('button',{class:'btn sec',onclick:()=>{ const p=S.player, xp=S.xp, lv=S.level, bd=S.badges; S=newState(p); S.xp=xp; S.level=lv; S.badges=bd; prevNums=null; save(); render(); }},'Try another idea')),
+  ];
+}
+
+/* ================= boot ================= */
+try{ window.claude?.hot?.snapshot?.(()=>({saved:lastSaved})); }catch(e){}
+function start(d){
+  try{ if(d&&d.saved){ S=JSON.parse(d.saved); lastSaved=d.saved; if(S&&S.screen==='stage') S.screen='map'; } }catch(e){ S=null; }
+  render();
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+
+</body>
+</html>
