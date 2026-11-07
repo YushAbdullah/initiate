@@ -394,6 +394,14 @@ h3{font-weight:600}
 .tchip b{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
 .tchip span{font-size:14px;color:var(--ink-soft)}
 @keyframes drop{from{opacity:0;transform:translateY(-16px)}}
+.demo{margin:0;display:grid;justify-items:center;gap:12px}
+.phone{position:relative;width:min(250px,70vw);aspect-ratio:390/780;background:#0f1a12;border-radius:34px;padding:9px;box-shadow:var(--e3),0 0 0 2px #2b3446 inset;animation:rise .7s var(--ease) both .2s}
+.phone video{width:100%;height:100%;object-fit:cover;border-radius:26px;display:block;background:var(--paper-2);cursor:pointer}
+.phone .notch{position:absolute;top:14px;left:50%;width:70px;height:16px;margin-left:-35px;background:#0f1a12;border-radius:10px;z-index:1}
+.demo-btn{position:absolute;right:18px;bottom:18px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(15,26,18,.72);color:#fff;font-size:14px;cursor:pointer}
+.demo-tag{display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;box-shadow:var(--e1, 0 2px 8px rgba(0,0,0,.08))}
+.demo-tag .dot{width:8px;height:8px;border-radius:50%;background:var(--tomato,#e5533d);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
 .fan{position:relative;height:360px}
 .fan .card{position:absolute;left:50%;top:50%;width:210px;height:280px;margin:-140px 0 0 -105px;border-radius:16px;box-shadow:var(--e3);padding:18px;display:grid;align-content:start;gap:8px;animation:fan .7s var(--ease) both;animation-delay:.25s}
 .fan .c1{background:#fff;--a:-14deg;--x:-70px}
@@ -1070,6 +1078,18 @@ function resultScreen(){
 }
 
 /* ================= title ================= */
+function demoPhone(){
+  const v=h('video',{src:'demo.mp4',poster:'demo-poster.jpg',playsinline:'',loop:'',preload:'metadata','aria-label':'Demo: a full play-through of INITIATE from character select to the report card, sped up'});
+  v.muted=true; v.playsInline=true;
+  const tag=h('div',{class:'demo-tag'},h('span',{class:'dot'}),'Demo · full game in 60 s');
+  const hint=h('button',{class:'demo-btn','aria-label':'Pause demo'},'❚❚');
+  const sync=()=>{ hint.textContent=v.paused?'▶':'❚❚'; hint.setAttribute('aria-label',v.paused?'Play demo':'Pause demo'); };
+  const toggle=()=>{ v.paused?v.play().catch(()=>{}):v.pause(); };
+  hint.onclick=e=>{e.stopPropagation();toggle();}; v.onclick=toggle; v.onplay=sync; v.onpause=sync;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce) setTimeout(()=>v.play().catch(()=>sync()),300); else setTimeout(sync,0);
+  return h('figure',{class:'demo'},h('div',{class:'phone'},h('div',{class:'notch'}),v,hint),tag);
+}
 function titleScreen(){
   const COLS=['var(--tomato)','var(--mustard)','var(--cobalt)','var(--leaf)','var(--pink)','var(--lilac)','var(--teal)','var(--tomato)'];
   const saved=loadSaved();
@@ -1082,10 +1102,7 @@ function titleScreen(){
       h('div',{class:'actions'},
         saved&&saved.player?h('button',{class:'btn',onclick:()=>{S=saved;prevNums=null;render();}},`Continue ${saved.player.name}'s journey`):null,
         h('button',{class:saved&&saved.player?'btn sec':'btn',onclick:()=>{clearSave();S={screen:'char'};render();}},saved&&saved.player?'Start a new journey':'Start your journey'))),
-    h('div',{class:'fan','aria-hidden':'true'},
-      h('div',{class:'card c1'},h('span',{class:'k'},'Idea Napkin'),h('span',{class:'hand'},'Breakfast in 60 seconds, no queue'),h('span',{class:'hand',style:'color:var(--tomato);font-size:20px'},'for office workers')),
-      h('div',{class:'card c2'},h('span',{class:'k'},'Business Model Canvas'),h('div',{class:'mini-bmc'},Array.from({length:10},()=>h('i')))),
-      h('div',{class:'card c3'},h('span',{class:'k'},'Report card'),h('span',{class:'grade'},'A'),h('span',{style:'font-weight:600'},'Champion'),h('span',{class:'stars'},'★★★★★')))),
+    demoPhone()),
     h('div',{class:'phase-strip'},[['Idea','Napkin, canvas, live pitch','var(--mustard)',1],['Plan','PM, PO, analyst, UX','var(--sky)',0],['Build','Sprints, CI/CD, QA','var(--leaf)',0],['Launch','UAT, live ops, users','var(--pink)',1]].map(([a,b,c,l])=>h('div',{class:'scrap phase'+(l?' light':''),style:`--c:${c};${rot()}`},h('b',{},a),b)))];
 }
 
