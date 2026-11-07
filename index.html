@@ -112,6 +112,15 @@ button.scrap:not(:disabled):hover{transform:rotate(var(--r,0deg)) translateY(-2p
 .phase b{display:block;font-family:var(--display);font-size:20px;font-weight:700}
 
 /* ---------- character ---------- */
+.roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.rolepick{background:var(--paper-2);border:2px solid transparent;border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;column-gap:8px;text-align:left;align-items:center;font:inherit;color:var(--ink);cursor:pointer;transition:transform .15s}
+.rolepick:hover{transform:translateY(-2px)}
+.rolepick .ri{grid-row:span 2;font-size:22px}
+.rolepick b{font-size:14px;line-height:1.2}
+.rolepick small{font-size:12px;color:var(--ink-soft)}
+.rolepick[aria-pressed="true"]{border-color:var(--cobalt);background:#e8eefc}
+.expert{background:#e9fbee;border-radius:12px;padding:10px 14px;display:grid;gap:2px;font-size:14px}
+.expert span{color:var(--ink-soft)}
 .pick2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .ptile{background:var(--paper-2);border:3px solid transparent;border-radius:12px;padding:14px;display:grid;justify-items:center;gap:6px;text-align:center}
 .ptile .av{width:110px}
@@ -655,10 +664,13 @@ function avatarSVG(o){
   let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">`;
   if(f&&!tud) s+=`<path d="M30 66 Q28 30 60 30 Q92 30 90 66 L95 106 Q60 114 25 106 Z" fill="${hr}"/>`;
   s+=`<path d="M14 140 Q14 101 60 99 Q106 101 106 140 Z" fill="${c}"/>`;
-  if(o.style==='smart') s+=`<path d="M47 100 L60 126 L73 100 Q60 98 47 100Z" fill="#fff"/><path d="M60 126 L55 140 L65 140Z" fill="${sh}"/>`;
-  if(o.style==='traditional') s+=`<path d="M50 101 Q60 110 70 101" stroke="${sh}" stroke-width="6" fill="none"/><circle cx="60" cy="116" r="2.4" fill="#fff"/><circle cx="60" cy="127" r="2.4" fill="#fff"/>`;
-  if(o.style==='casual'||!o.style) s+=`<rect x="70" y="113" width="15" height="12" rx="3" fill="${sh}"/>`;
+  const R=o.role&&ROLE_ART[o.role]; if(R&&!tud) s+=R(c,sh,f,tud);
+  else if(R);
+  else if(o.style==='smart') s+=`<path d="M47 100 L60 126 L73 100 Q60 98 47 100Z" fill="#fff"/><path d="M60 126 L55 140 L65 140Z" fill="${sh}"/>`;
+  if(!R&&o.style==='traditional') s+=`<path d="M50 101 Q60 110 70 101" stroke="${sh}" stroke-width="6" fill="none"/><circle cx="60" cy="116" r="2.4" fill="#fff"/><circle cx="60" cy="127" r="2.4" fill="#fff"/>`;
+  if(!R&&(o.style==='casual'||!o.style)) s+=`<rect x="70" y="113" width="15" height="12" rx="3" fill="${sh}"/>`;
   if(tud) s+=`<path d="M27 68 Q27 25 60 25 Q93 25 93 68 Q96 96 106 118 Q60 132 14 118 Q24 96 27 68Z" fill="${o.tcolor||'#e7a3b8'}"/><path d="M27 68 Q27 25 60 25 Q93 25 93 68" fill="none" stroke="${sh}" stroke-width="3"/>`;
+  if(tud&&R){ const cid='rc'+(++avatarSVG.n); s+=`<defs><clipPath id="${cid}"><rect x="0" y="121" width="120" height="19"/></clipPath></defs><g clip-path="url(#${cid})">${R(c,sh,f,tud)}</g>`; }
   else s+=`<rect x="52" y="84" width="16" height="18" rx="4" fill="${sk}"/>`;
   s+= tud?`<ellipse cx="60" cy="66" rx="20" ry="23" fill="${sk}"/>`:`<circle cx="60" cy="64" r="25" fill="${sk}"/>`;
   if(!tud){
@@ -669,9 +681,12 @@ function avatarSVG(o){
   if(o.hw==='kopiah') s+=`<path d="M36 51 Q37 32 60 31 Q83 32 84 51 Q60 46 36 51Z" fill="#f8f8f3" stroke="#d6d2c7" stroke-width="1.5"/><path d="M42 44 H78" stroke="#d6d2c7" stroke-width="1.5"/>`;
   if(o.hw==='cap') s+=`<path d="M35 53 Q35 31 60 31 Q85 31 85 53Z" fill="${o.capc||'#23262e'}"/><path d="M36 51 Q62 47 94 55 Q62 60 36 55Z" fill="${o.capc||'#23262e'}"/>`;
   const ey=tud?64:63;
+  if(o.role==='analyst') s+=`<g fill="none" stroke="#23262e" stroke-width="2.4"><circle cx="51" cy="${ey}" r="7.5"/><circle cx="69" cy="${ey}" r="7.5"/><path d="M58.5 ${ey} H61.5"/></g>`;
+  if(o.role==='ops') s+=`<path d="M33 66 Q33 36 60 36 Q87 36 87 66" fill="none" stroke="#23262e" stroke-width="4"/><rect x="28" y="60" width="9" height="15" rx="4" fill="#23262e"/><rect x="83" y="60" width="9" height="15" rx="4" fill="#23262e"/><path d="M32 74 Q36 86 50 84" fill="none" stroke="#23262e" stroke-width="2.5"/><circle cx="51" cy="84" r="2.6" fill="#23262e"/>`;
   s+=`<circle cx="51" cy="${ey}" r="3.2" fill="#23262e"/><circle cx="69" cy="${ey}" r="3.2" fill="#23262e"/><path d="M52 ${ey+11} Q60 ${ey+17} 68 ${ey+11}" stroke="#23262e" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="44" cy="${ey+8}" r="4.5" fill="#f08b8b" opacity=".45"/><circle cx="76" cy="${ey+8}" r="4.5" fill="#f08b8b" opacity=".45"/>`;
   return s+'</svg>';
 }
+avatarSVG.n=0;
 function av(o,cls){ return h('div',{class:'av'+(cls?' '+cls:''),'aria-hidden':'true',html:avatarSVG(o)}); }
 
 /* ================= content ================= */
@@ -679,6 +694,24 @@ const SKINS=['#f6d7bd','#f0c8a4','#e1ad85','#c68a5e','#9a6440','#6e4528'];
 const COLORS=['#3557c6','#e5533d','#1f9e93','#9478d1','#45a865','#2b3446'];
 const HAIRS=['#2a1d14','#16110d','#6b3d1c'];
 const HEADWEAR={m:[['none','None'],['cap','Cap'],['songkok','Songkok'],['kopiah','Kopiah']],f:[['none','None'],['tudung','Tudung'],['cap','Cap']]};
+/* Roles: every role is open to men and women. The outfit is drawn from the role; a small XP bonus on the role's home stage. */
+const ROLES=[
+  {id:'founder',name:'Founder',outfit:'Blazer',exp:'Pitching and vision',stage:'pitch',icon:'💡'},
+  {id:'pm',name:'Product Manager',outfit:'Shirt and lanyard',exp:'Plans, budget and trade-offs',stage:'pm',icon:'🗂️'},
+  {id:'analyst',name:'Business Analyst',outfit:'Vest and glasses',exp:'Requirements and data',stage:'pa',icon:'📊'},
+  {id:'designer',name:'UI/UX Designer',outfit:'Turtleneck and pencil',exp:'Screens users love',stage:'ux',icon:'🎨'},
+  {id:'dev',name:'Software Engineer',outfit:'Hoodie',exp:'Building and shipping',stage:'dev',icon:'💻'},
+  {id:'qa',name:'QA Engineer',outfit:'Polo and test badge',exp:'Finding bugs early',stage:'qa',icon:'🔍'},
+  {id:'ops',name:'DevOps Engineer',outfit:'Work jacket and headset',exp:'Pipelines and uptime',stage:'live',icon:'⚙️'}];
+const ROLE_ART={
+  founder:(c,sh)=>`<path d="M44 101 L60 140 L76 101 Q60 98 44 101Z" fill="#fff"/><path d="M57 106 L60 103 L63 106 L61 134 L60 137 L59 134Z" fill="#e5533d"/><path d="M44 101 L56 124 L48 128 L38 106Z M76 101 L64 124 L72 128 L82 106Z" fill="${sh}"/><circle cx="60" cy="137" r="1.8" fill="#23262e"/>`,
+  pm:(c,sh)=>`<path d="M48 100 L60 116 L72 100 Q60 98 48 100Z" fill="#fff"/><path d="M48 101 L58 132 M72 101 L62 132" stroke="#f2b632" stroke-width="2.6" fill="none"/><rect x="51" y="128" width="18" height="12" rx="2" fill="#fff" stroke="${sh}" stroke-width="1.5"/><rect x="54" y="131" width="12" height="2.5" fill="#3557c6"/>`,
+  analyst:(c,sh)=>`<path d="M47 100 L60 120 L73 100 Q60 98 47 100Z" fill="#fff"/><path d="M47 101 L58 140 L40 140 L30 110Z M73 101 L62 140 L80 140 L90 110Z" fill="${sh}"/><rect x="74" y="116" width="10" height="3" rx="1" fill="#fff"/>`,
+  designer:(c,sh)=>`<path d="M45 101 Q60 112 75 101 L74 95 Q60 104 46 95Z" fill="${c}"/><path d="M45 101 Q60 112 75 101" stroke="${sh}" stroke-width="5" fill="none"/><path d="M78 108 L90 140" stroke="#f2b632" stroke-width="4" stroke-linecap="round"/><path d="M78 108 L76 103" stroke="#23262e" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="122" r="5" fill="#e5533d"/><circle cx="48" cy="128" r="4" fill="#45a865"/><circle cx="38" cy="132" r="3.5" fill="#f2b632"/>`,
+  dev:(c,sh,f,tud)=>(tud?'':`<path d="M30 112 Q26 92 42 96 Q60 108 78 96 Q94 92 90 112" fill="${c}" stroke="${sh}" stroke-width="3"/>`)+`<path d="M53 104 L51 124 M67 104 L69 124" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><rect x="44" y="126" width="32" height="12" rx="3" fill="${sh}"/><text x="60" y="135" font-size="9" text-anchor="middle" fill="#fff" font-family="monospace" font-weight="700">&lt;/&gt;</text>`,
+  qa:(c,sh)=>`<path d="M50 100 L60 112 L70 100 L66 98 L60 105 L54 98Z" fill="#fff"/><circle cx="60" cy="116" r="2" fill="#fff"/><rect x="70" y="112" width="18" height="14" rx="3" fill="#fff"/><path d="M74 119 L77 122 L84 115" stroke="#45a865" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="40" cy="124" r="6" fill="none" stroke="#23262e" stroke-width="2.5"/><path d="M44 128 L49 134" stroke="#23262e" stroke-width="3" stroke-linecap="round"/>`,
+  ops:(c,sh)=>`<path d="M60 100 V140" stroke="${sh}" stroke-width="3"/><path d="M56 104 V140 M64 104 V140" stroke="#cfd3d6" stroke-width="1.5" stroke-dasharray="2 3"/><rect x="34" y="114" width="16" height="10" rx="2" fill="${sh}"/><path d="M14 132 H106" stroke="#f2b632" stroke-width="5" opacity=".9"/>`};
+const roleOf=id=>ROLES.find(r=>r.id===id);
 const STYLES={m:[['casual','Casual'],['smart','Smart'],['traditional','Baju Melayu']],f:[['casual','Casual'],['smart','Smart'],['traditional','Baju kurung']]};
 
 const IDEAS=[
@@ -893,7 +926,7 @@ function hud(){
     return el; };
   const el=h('header',{class:'hud'},
     h('div',{class:'hud-top'},
-      h('div',{class:'who'},playerAv(),h('div',{},h('div',{class:'nm'},S.player.name),h('div',{class:'sub'},S.ideaId?I().name:'No idea picked yet'))),
+      h('div',{class:'who'},playerAv(),h('div',{},h('div',{class:'nm'},S.player.name),h('div',{class:'sub'},[roleOf(S.player.role)?.name,S.ideaId?I().name:'No idea picked yet'].filter(Boolean).join(' · ')))),
       h('div',{class:'xp'},h('small',{},`Level ${S.level} · ${S.xp} / ${need(S.level)} XP`),h('div',{class:'bar'},h('i',{style:`width:${S.xp/need(S.level)*100}%`})))),
     S.ideaId?h('div',{class:'chips'},
       chip('budget','Budget',S.budget?`RM ${S.budget.toFixed(1)}k`:'not funded'),chip('weeks','Time',`week ${S.weeks}`),chip('quality','Quality',`${nums.quality}%`),chip('debt','Tech debt',S.debt),chip('value','Value',S.value)):null);
@@ -997,10 +1030,11 @@ const sheet=(...kids)=>h('section',{class:'sheet'},...kids);
 function finish(score,lines){
   score=Math.round(clamp(score,0,100));
   const st=STG[S.stage]; S.scores[st.id]=score;
-  const gained=50+(score>=60?50:0)+Math.round(score*.3);
+  const gained0=50+(score>=60?50:0)+Math.round(score*.3), myRole=roleOf(S.player.role), homeBonus=myRole&&myRole.stage===st.id;
+  const gained=homeBonus?Math.round(gained0*1.2):gained0;
   const before=S.level; addXP(gained);
   const earned=checkBadges(st.id).filter(b=>!S.badges.includes(b)); S.badges.push(...earned);
-  S.lastResult={id:st.id,score,lines,gained,levelUp:S.level>before?S.level:0,badges:earned};
+  S.lastResult={id:st.id,score,lines,gained,roleBonus:homeBonus?myRole.name:'',levelUp:S.level>before?S.level:0,badges:earned};
   S.stage++; S.screen='result'; save(); render();
 }
 function checkBadges(id){
@@ -1026,7 +1060,7 @@ function resultScreen(){
   return [h('section',{class:'sheet res-sheet'},
     h('div',{class:'role'},`${st.role} · ${STG_TITLE[st.id]} complete`),
     h('div',{class:'score-big'},h('div',{class:'score-num'},h('span',{class:'res-num'},'0'),h('small',{},' / 100')),h('div',{class:'studs','aria-label':`${n} of 5`},[0,1,2,3,4].map(i=>h('i',{class:i<n?'on':''})))),
-    h('div',{class:'popup',style:'animation-delay:.5s'},`+${R.gained} XP`),
+    h('div',{class:'popup',style:'animation-delay:.5s'},`+${R.gained} XP${R.roleBonus?` (incl. ${R.roleBonus} bonus)`:''}`),
     R.levelUp?h('div',{class:'levelup pop-in',style:'animation-delay:.8s'},`Level up! You are now level ${R.levelUp}`):null,
     R.badges.length?h('div',{style:'display:grid;gap:6px'},h('div',{class:'label'},'New badge'),h('div',{class:'badges'},R.badges.map(id=>{const b=BADGES.find(x=>x.id===id);return h('span',{class:'badge',style:`--c:${b.c}`,title:b.how},`${b.name}: ${b.how}`);}))):null,
     h('ul',{class:'lines'},R.lines.map(l=>h('li',{},l))),
@@ -1059,7 +1093,7 @@ function titleScreen(){
 function charScreen(){
   let g=null, P={};
   const DEF={m:{name:'Aiman',trait:'Calm under pressure'},f:{name:'Aisyah',trait:'Sharp on the read'}};
-  const base=gg=>({g:gg,skin:SKINS[2],hw:'none',style:'casual',color:COLORS[0],hair:HAIRS[0],tcolor:'#e7a3b8',name:DEF[gg].name});
+  const base=gg=>({g:gg,skin:SKINS[2],hw:'none',style:'casual',role:'founder',color:COLORS[0],hair:HAIRS[0],tcolor:'#e7a3b8',name:DEF[gg].name});
   const tiles={};
   const custom=h('div',{});
   const pickTiles=h('div',{class:'pick2'},['m','f'].map(gg=>{ tiles[gg]=h('button',{class:'ptile','aria-pressed':'false',onclick:()=>choose(gg)},av(base(gg)),h('b',{},DEF[gg].name),h('small',{},DEF[gg].trait)); return tiles[gg]; }));
@@ -1069,14 +1103,15 @@ function charScreen(){
     const swatch=(list,key)=>h('div',{class:'swatches'},list.map(c=>h('button',{class:'sw',style:`--c:${c}`,'aria-label':`Colour ${c}`,'aria-pressed':String(P[key]===c),onclick:()=>{P[key]=c;drawCustom();}})));
     const pills=(list,key)=>h('div',{class:'swatches'},list.map(([v,l])=>h('button',{class:'pill','aria-pressed':String(P[key]===v),onclick:()=>{P[key]=v;drawCustom();}},l)));
     const name=h('input',{id:'pname',value:P.name,maxlength:'16','aria-label':'Player name',oninput:e=>{P.name=e.target.value;}});
-    custom.replaceChildren(sheet(h('h3',{},'Make it yours'),h('p',{class:'real'},'Optional. Your look is just for fun and never changes your score.'),
+    custom.replaceChildren(sheet(h('h3',{},'Make it yours'),h('p',{class:'real'},'Pick your job and look. Any role works for men and women. Your role gives a small XP bonus on your home stage and never changes your score.'),
       h('div',{class:'custom'},preview,h('div',{style:'display:grid;gap:14px'},
         h('div',{class:'field'},h('label',{class:'label',for:'pname'},'Your name'),name),
         h('div',{class:'opt-row'},h('div',{class:'label'},'Skin tone'),swatch(SKINS,'skin')),
         h('div',{class:'opt-row'},h('div',{class:'label'},'Headwear'),pills(HEADWEAR[g],'hw')),
         P.hw==='none'?h('div',{class:'opt-row'},h('div',{class:'label'},'Hair'),swatch(HAIRS,'hair')):null,
         P.hw==='tudung'?h('div',{class:'opt-row'},h('div',{class:'label'},'Tudung colour'),swatch(['#e7a3b8','#9fc4e8','#f2b632','#2b3446','#f8f8f3','#45a865'],'tcolor')):null,
-        h('div',{class:'opt-row'},h('div',{class:'label'},'Outfit'),pills(STYLES[g],'style')),
+        h('div',{class:'opt-row'},h('div',{class:'label'},'Role and outfit'),h('div',{class:'roles'},ROLES.map(r=>h('button',{class:'rolepick','aria-pressed':String(P.role===r.id),onclick:()=>{P.role=r.id;drawCustom();}},h('span',{class:'ri','aria-hidden':'true'},r.icon),h('b',{},r.name),h('small',{},r.outfit))))),
+        (()=>{const r=roleOf(P.role); const st=STG.find(x=>x.id===r.stage); return h('div',{class:'expert'},h('b',{},`Expertise: ${r.exp}`),h('span',{},`+20% XP on the ${st?st.short:r.stage} stage. Every role can finish every stage.`));})(),
         h('div',{class:'opt-row'},h('div',{class:'label'},'Outfit colour'),swatch(COLORS,'color')))),
       h('div',{class:'actions'},h('button',{class:'btn',onclick:confirm},'Start my journey'))));
   }
